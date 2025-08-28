@@ -29,10 +29,11 @@
             border-bottom: 1px solid #1b1b1b;
             padding: 15px;
             width: calc(100% - 30px);
+            z-index: 1000;
         }
 
         .container {
-            padding-top: 50px; /* Space for fixed header */
+            padding-top: 120px; /* increased space for header + animation */
             max-width: 1100px;
             margin: auto;
             border-radius: 10px;
@@ -92,7 +93,6 @@
         .table-wrapper {
             width: 100%;
             overflow-x: auto;
-            /* horizontal scroll only inside wrapper */
         }
 
         table {
@@ -102,7 +102,6 @@
             font-size: 13px;
             border-radius: 7px;
             min-width: 600px;
-            /* optional: so table can overflow */
         }
 
         th,
@@ -111,13 +110,11 @@
             padding: 8px;
             text-align: center;
             white-space: nowrap;
-            /* prevent line breaks */
         }
 
         th {
             background: #1b1b1b;
         }
-
 
         .content {
             margin: 15px;
@@ -136,26 +133,40 @@
             border: 1px solid #7a5600;
             color: #d09100;
         }
-        #animation .text-xl {
-  font-size: 1.5rem;
-  color: currentColor;
-  letter-spacing: 0.06em;
+
+        /* Animation text style */
+        .animation-container {
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        .text-xl {
+            font-size: 2rem;
+            letter-spacing: 0.06em;
+            display: inline-block;
+        }
+
+        .text-xl span {
+            display: inline-block;
+            opacity: 0;
         }
     </style>
 </head>
 
 <body>
     <div class="header">IoT Connect</div>
-    <div class="large grid centered square-grid">
-  <h2 class="text-xl">IoT Connect</h2>
+
+    <!-- Animated Text -->
+    <div class="animation-container">
+        <h2 class="text-xl">IoT Connect</h2>
     </div>
+
     <div class="container">
         <div class="row">
             <input id="channelId" type="text" placeholder="Channel ID (e.g. 2890599)" />
             <button id="loadBtn">Fetch</button>
         </div>
         <div class="content">
-
             <div id="details" class="details" style="display:none;">
                 <div><span id="chName"></span></div>
                 <div><span id="chDesc"></span></div>
@@ -172,26 +183,35 @@
     </div>
 
     <script>
-        import { animate, stagger, text } from 'animejs';
+        // -------- TEXT ANIMATION FIXED --------
+        const textEl = document.querySelector(".text-xl");
+        const textContent = textEl.textContent;
+        textEl.innerHTML = textContent
+            .split("")
+            .map(char => `<span>${char}</span>`)
+            .join("");
 
-const { chars } = text.split('h2', { words: false, chars: true });
+        anime.timeline({ loop: true })
+            .add({
+                targets: ".text-xl span",
+                translateY: [-40, 0],
+                opacity: [0, 1],
+                rotate: [-360, 0],
+                easing: "easeOutBounce",
+                duration: 1200,
+                delay: anime.stagger(100)
+            })
+            .add({
+                targets: ".text-xl span",
+                translateY: [0, 40],
+                opacity: [1, 0],
+                easing: "easeInExpo",
+                duration: 800,
+                delay: anime.stagger(100),
+                endDelay: 1000
+            });
 
-animate(chars, {
-  // Property keyframes
-  y: [
-    { to: '-2.75rem', ease: 'outExpo', duration: 600 },
-    { to: 0, ease: 'outBounce', duration: 800, delay: 100 }
-  ],
-  // Property specific parameters
-  rotate: {
-    from: '-1turn',
-    delay: 0
-  },
-  delay: stagger(50),
-  ease: 'inOutCirc',
-  loopDelay: 1000,
-  loop: true
-});
+        // -------- IoT CODE UNCHANGED --------
         const colors = ["#ffbb00", "#00fcf8", "#00fc47", "#9b59b6", "#f2994a", "#17a2a8", "#e67e22", "#34495e"];
         const charts = [];
 
@@ -203,24 +223,20 @@ animate(chars, {
             if (!channelId) return showMessage('Please enter a valid channel ID.');
 
             try {
-                // Fetch channel + feeds in a single call
-                const results = 50; // number of recent points to fetch
+                const results = 50;
                 const res = await fetch(`https://api.thingspeak.com/channels/${encodeURIComponent(channelId)}/feeds.json?results=${results}`);
                 if (!res.ok) throw new Error(`HTTP ${res.status} - ${res.statusText}`);
                 const data = await res.json();
 
-                // ThingSpeak returns { channel: {...}, feeds: [...] }
-                const channel = data.channel ?? data;    // fallback if shape differs
+                const channel = data.channel ?? data;
                 const feeds = Array.isArray(data.feeds) ? data.feeds : [];
 
-                // Display channel info
                 document.getElementById('details').style.display = 'block';
                 document.getElementById('chName').textContent = channel.name ?? '—';
                 document.getElementById('chDesc').textContent = channel.description ?? '—';
                 document.getElementById('chCreated').textContent = channel.created_at ?? '—';
                 document.getElementById('chUpdated').textContent = channel.updated_at ?? '—';
 
-                // Detect which field indices to show:
                 const available = [];
                 for (let i = 1; i <= 8; i++) {
                     const metaName = channel[`field${i}`];
@@ -233,37 +249,28 @@ animate(chars, {
                     return;
                 }
 
-                // show field names
                 const fieldNames = available.map(i => channel[`field${i}`] ?? `Field ${i}`);
                 document.getElementById('chFields').textContent = fieldNames.join(', ');
 
-                // labels (timestamps)
                 const labels = feeds.map(f => {
                     return f.created_at ? new Date(f.created_at).toLocaleString() : '-';
                 });
 
-                // Clear previous charts & table UI
                 const chartsContainer = document.getElementById('chartsContainer');
                 chartsContainer.innerHTML = '';
-                // destroy Chart.js instances if present
                 while (charts.length) { const c = charts.pop(); try { c.destroy(); } catch (e) { } }
 
-                // Build a separate chart for each available field index
                 available.forEach((idx, idxPos) => {
-                    // gather values; convert numeric strings to numbers where possible; use null for missing
                     const rawValues = feeds.map(f => {
                         const v = f[`field${idx}`];
                         if (v === undefined || v === null || String(v).trim() === '') return null;
-                        // try numeric conversion; if not a number keep original string (Chart.js will ignore non-numeric)
                         const n = Number(v);
                         return isFinite(n) ? n : v;
                     });
 
-                    // Skip if every value is null
                     const nonEmpty = rawValues.some(v => v !== null);
                     if (!nonEmpty) return;
 
-                    // create DOM for chart
                     const block = document.createElement('div');
                     block.className = 'chart-block';
                     const title = document.createElement('h3');
@@ -274,9 +281,8 @@ animate(chars, {
                     block.appendChild(canvas);
                     chartsContainer.appendChild(block);
 
-                    // create Chart
                     const color = colors[idxPos % colors.length];
-                    const ctx = canvas.getContext("2d");   // ✅ use the appended canvas
+                    const ctx = canvas.getContext("2d");
 
                     const cfg = {
                         type: 'line',
@@ -286,7 +292,7 @@ animate(chars, {
                                 label: channel[`field${idx}`] ?? `Field ${idx}`,
                                 data: rawValues,
                                 borderColor: color,
-                                borderWidth: 0.4, // thin line
+                                borderWidth: 0.4,
                                 fill: true,
                                 tension: 0.2,
                                 spanGaps: false,
@@ -296,7 +302,6 @@ animate(chars, {
                                     const chart = ctx.chart;
                                     const { ctx: c, chartArea } = chart;
                                     if (!chartArea) return null;
-
                                     const gradient = c.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
                                     gradient.addColorStop(0, color + "99");
                                     gradient.addColorStop(1, color + "00");
@@ -325,15 +330,12 @@ animate(chars, {
 
                     const chart = new Chart(ctx, cfg);
                     charts.push(chart);
-
                 });
 
-                // Build data table containing Time + all available fields
                 const tableContainer = document.getElementById('tableContainer');
                 let ths = `<th>Time</th>`;
                 available.forEach(i => ths += `<th>${channel[`field${i}`] ?? `Field ${i}`}</th>`);
                 let rows = '';
-                // iterate feeds newest -> oldest or oldest -> newest? keep as fetched (oldest first)
                 feeds.forEach(f => {
                     const timeCell = f.created_at ? new Date(f.created_at).toLocaleString() : '-';
                     let r = `<tr><td>${timeCell}</td>`;
@@ -380,9 +382,4 @@ animate(chars, {
         }
     </script>
 </body>
-
-
 </html>
-
-
-
