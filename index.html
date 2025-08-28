@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>IoTConnect</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            font-family: "poppins", sans-serif;
+            font-weight: 100;
+            background: #000000;
+            color: #e7e7e7;
+            margin: 0;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #000000;
+            border-bottom: 1px solid #1b1b1b;
+            padding: 15px;
+            width: calc(100% - 30px);
+        }
+
+        .container {
+            padding-top: 50px; /* Space for fixed header */
+            max-width: 1100px;
+            margin: auto;
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .row {
+            display: flex;
+            gap: 12px;
+            margin: 15px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border-radius: 2px;
+            border: none;
+            color: white;
+            background-color: #131313;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: none;
+            background-color: #131313;
+        }
+
+        button {
+            padding: 10px 14px;
+            border-radius: 2px;
+            border: none;
+            background-color: #cfcfcf;
+            color: #000000;
+            cursor: pointer;
+        }
+
+        .details {
+            margin-top: 10px;
+            line-height: 23px;
+        }
+
+        .chart-block {
+            margin-top: 10px;
+            border-radius: 8px;
+            background: #000000;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        canvas {
+            width: 100% !important;
+            max-height: 250px;
+            display: block;
+            border: 1px solid #1b1b1b;
+            border-radius: 4px;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            /* horizontal scroll only inside wrapper */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 18px;
+            font-size: 13px;
+            border-radius: 7px;
+            min-width: 600px;
+            /* optional: so table can overflow */
+        }
+
+        th,
+        td {
+            border: 1px solid #1b1b1b;
+            padding: 8px;
+            text-align: center;
+            white-space: nowrap;
+            /* prevent line breaks */
+        }
+
+        th {
+            background: #1b1b1b;
+        }
+
+
+        .content {
+            margin: 15px;
+        }
+
+        #chName {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .msg {
+            padding: 10px;
+            margin: 15px;
+            border-radius: 6px;
+            background-color: #0f0b00;
+            border: 1px solid #7a5600;
+            color: #d09100;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">IoT Connect</div>
+    <div class="container">
+        <div class="row">
+            <input id="channelId" type="text" placeholder="Channel ID (e.g. 2890599)" />
+            <button id="loadBtn">Fetch</button>
+        </div>
+        <div class="content">
+
+            <div id="details" class="details" style="display:none;">
+                <div><span id="chName"></span></div>
+                <div><span id="chDesc"></span></div>
+                <div>Created: <span id="chCreated"></span> &nbsp; Updated: <span id="chUpdated"></span></div>
+                <div>Detected fields: <span id="chFields"></span></div>
+            </div>
+
+            <div id="chartsContainer"></div>
+            <div class="table-wrapper">
+                <div id="tableContainer"></div>
+            </div>
+            <div id="message" class="msg" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const colors = ["#ffbb00", "#00fcf8", "#00fc47", "#9b59b6", "#f2994a", "#17a2a8", "#e67e22", "#34495e"];
+        const charts = [];
+
+        document.getElementById('loadBtn').addEventListener('click', () => loadChannel());
+
+        async function loadChannel() {
+            const channelId = document.getElementById('channelId').value.trim();
+            resetUI();
+            if (!channelId) return showMessage('Please enter a valid channel ID.');
+
+            try {
+                // Fetch channel + feeds in a single call
+                const results = 50; // number of recent points to fetch
+                const res = await fetch(`https://api.thingspeak.com/channels/${encodeURIComponent(channelId)}/feeds.json?results=${results}`);
+                if (!res.ok) throw new Error(`HTTP ${res.status} - ${res.statusText}`);
+                const data = await res.json();
+
+                // ThingSpeak returns { channel: {...}, feeds: [...] }
+                const channel = data.channel ?? data;    // fallback if shape differs
+                const feeds = Array.isArray(data.feeds) ? data.feeds : [];
+
+                // Display channel info
+                document.getElementById('details').style.display = 'block';
+                document.getElementById('chName').textContent = channel.name ?? '—';
+                document.getElementById('chDesc').textContent = channel.description ?? '—';
+                document.getElementById('chCreated').textContent = channel.created_at ?? '—';
+                document.getElementById('chUpdated').textContent = channel.updated_at ?? '—';
+
+                // Detect which field indices to show:
+                const available = [];
+                for (let i = 1; i <= 8; i++) {
+                    const metaName = channel[`field${i}`];
+                    const hasFeedValue = feeds.some(f => f[`field${i}`] !== undefined && f[`field${i}`] !== null && String(f[`field${i}`]).trim() !== "");
+                    if (metaName || hasFeedValue) available.push(i);
+                }
+
+                if (available.length === 0) {
+                    showMessage('No field data found in this channel (no field names set and no field values present).');
+                    return;
+                }
+
+                // show field names
+                const fieldNames = available.map(i => channel[`field${i}`] ?? `Field ${i}`);
+                document.getElementById('chFields').textContent = fieldNames.join(', ');
+
+                // labels (timestamps)
+                const labels = feeds.map(f => {
+                    return f.created_at ? new Date(f.created_at).toLocaleString() : '-';
+                });
+
+                // Clear previous charts & table UI
+                const chartsContainer = document.getElementById('chartsContainer');
+                chartsContainer.innerHTML = '';
+                // destroy Chart.js instances if present
+                while (charts.length) { const c = charts.pop(); try { c.destroy(); } catch (e) { } }
+
+                // Build a separate chart for each available field index
+                available.forEach((idx, idxPos) => {
+                    // gather values; convert numeric strings to numbers where possible; use null for missing
+                    const rawValues = feeds.map(f => {
+                        const v = f[`field${idx}`];
+                        if (v === undefined || v === null || String(v).trim() === '') return null;
+                        // try numeric conversion; if not a number keep original string (Chart.js will ignore non-numeric)
+                        const n = Number(v);
+                        return isFinite(n) ? n : v;
+                    });
+
+                    // Skip if every value is null
+                    const nonEmpty = rawValues.some(v => v !== null);
+                    if (!nonEmpty) return;
+
+                    // create DOM for chart
+                    const block = document.createElement('div');
+                    block.className = 'chart-block';
+                    const title = document.createElement('h3');
+                    title.textContent = channel[`field${idx}`] ?? `Field ${idx}`;
+                    block.appendChild(title);
+                    const canvas = document.createElement('canvas');
+                    canvas.id = `chart_field_${idx}`;
+                    block.appendChild(canvas);
+                    chartsContainer.appendChild(block);
+
+                    // create Chart
+                    const color = colors[idxPos % colors.length];
+                    const ctx = canvas.getContext("2d");   // ✅ use the appended canvas
+
+                    const cfg = {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: channel[`field${idx}`] ?? `Field ${idx}`,
+                                data: rawValues,
+                                borderColor: color,
+                                borderWidth: 1, // thin line
+                                fill: true,
+                                tension: 0,
+                                spanGaps: false,
+                                pointRadius: 0,
+                                pointHoverRadius: 3,
+                                backgroundColor: (ctx) => {
+                                    const chart = ctx.chart;
+                                    const { ctx: c, chartArea } = chart;
+                                    if (!chartArea) return null;
+
+                                    const gradient = c.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+                                    gradient.addColorStop(0, color + "99");
+                                    gradient.addColorStop(1, color + "00");
+                                    return gradient;
+                                }
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: true, position: 'top' } },
+                            scales: {
+                                x: {
+                                    display: true,
+                                    title: { display: true, text: 'Timestamp' },
+                                    grid: { color: "#121212" }
+                                },
+                                y: {
+                                    display: true,
+                                    title: { display: true, text: channel[`field${idx}`] ?? `Field ${idx}` },
+                                    grid: { color: "#121212" }
+                                }
+                            }
+                        }
+                    };
+
+                    const chart = new Chart(ctx, cfg);
+                    charts.push(chart);
+
+                });
+
+                // Build data table containing Time + all available fields
+                const tableContainer = document.getElementById('tableContainer');
+                let ths = `<th>Time</th>`;
+                available.forEach(i => ths += `<th>${channel[`field${i}`] ?? `Field ${i}`}</th>`);
+                let rows = '';
+                // iterate feeds newest -> oldest or oldest -> newest? keep as fetched (oldest first)
+                feeds.forEach(f => {
+                    const timeCell = f.created_at ? new Date(f.created_at).toLocaleString() : '-';
+                    let r = `<tr><td>${timeCell}</td>`;
+                    available.forEach(i => {
+                        const v = f[`field${i}`];
+                        r += `<td>${(v === undefined || v === null || String(v).trim() === '') ? '-' : escapeHtml(String(v))}</td>`;
+                    });
+                    r += `</tr>`;
+                    rows += r;
+                });
+                tableContainer.innerHTML = `<table><thead><tr>${ths}</tr></thead><tbody>${rows}</tbody></table>`;
+
+            } catch (err) {
+                showMessage('Error fetching channel: ' + err.message);
+                console.error(err);
+            }
+        }
+
+        function resetUI() {
+            document.getElementById('details').style.display = 'none';
+            document.getElementById('chName').textContent = '';
+            document.getElementById('chDesc').textContent = '';
+            document.getElementById('chCreated').textContent = '';
+            document.getElementById('chUpdated').textContent = '';
+            document.getElementById('chFields').textContent = '';
+            document.getElementById('chartsContainer').innerHTML = '';
+            document.getElementById('tableContainer').innerHTML = '';
+            hideMessage();
+        }
+
+        function showMessage(msg) {
+            const el = document.getElementById('message');
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+        function hideMessage() {
+            const el = document.getElementById('message');
+            el.style.display = 'none';
+            el.textContent = '';
+        }
+
+        function escapeHtml(s) {
+            return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+    </script>
+</body>
+
+</html>
