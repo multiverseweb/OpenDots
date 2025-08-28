@@ -135,11 +135,19 @@
             border: 1px solid #7a5600;
             color: #d09100;
         }
+        #animation .text-xl {
+  font-size: 1.5rem;
+  color: currentColor;
+  letter-spacing: 0.06em;
+        }
     </style>
 </head>
 
 <body>
     <div class="header">IoT Connect</div>
+    <div class="large grid centered square-grid">
+  <h2 class="text-xl">IoT Connect</h2>
+    </div>
     <div class="container">
         <div class="row">
             <input id="channelId" type="text" placeholder="Channel ID (e.g. 2890599)" />
@@ -163,6 +171,26 @@
     </div>
 
     <script>
+        import { animate, stagger, text } from 'animejs';
+
+const { chars } = text.split('h2', { words: false, chars: true });
+
+animate(chars, {
+  // Property keyframes
+  y: [
+    { to: '-2.75rem', ease: 'outExpo', duration: 600 },
+    { to: 0, ease: 'outBounce', duration: 800, delay: 100 }
+  ],
+  // Property specific parameters
+  rotate: {
+    from: '-1turn',
+    delay: 0
+  },
+  delay: stagger(50),
+  ease: 'inOutCirc',
+  loopDelay: 1000,
+  loop: true
+});
         const colors = ["#ffbb00", "#00fcf8", "#00fc47", "#9b59b6", "#f2994a", "#17a2a8", "#e67e22", "#34495e"];
         const charts = [];
 
@@ -354,4 +382,5 @@
 
 
 </html>
+
 
