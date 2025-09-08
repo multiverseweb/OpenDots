@@ -1,0 +1,224 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    font-family: "poppins", sans-serif;
+    font-weight: 100;
+    background: #000000;
+    color: #e7e7e7;
+    margin: 0;
+}
+.loading{
+    filter: brightness(0) invert(1);
+}
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #000000;
+    border-bottom: 1px solid #363636;
+    padding: 10px;
+    width: calc(100% - 20px);
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.headerIcons{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.headerIcon{
+    height: 15px;
+    padding: 5px;
+    cursor: pointer;
+    border: 1px solid #363636;
+    border-radius: 5px;
+    cursor: pointer;
+}
+#burger{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 7px 6px 2px 6px;
+}
+#burger span{
+    width: 13px;
+    height: 0.1px;
+    background-color: #fff;
+}
+.container {
+    padding-top: 80px;
+    /* increased space for header + animation */
+    max-width: 1100px;
+    margin: auto;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.inputs {
+    display: flex;
+    flex-direction: column;
+    margin: 15px;
+}
+
+select {
+    padding: 0 5px;
+    height: 40px;
+    border-radius: 2px;
+    border: none;
+    color: white;
+    border-bottom: 1px solid #363636;
+    background-color: transparent;
+}
+select:focus {
+    outline: none;
+    background-color: transparent;
+}
+
+option {
+    background-color: #000000;
+    color: white;
+}
+/* if datasource is selected then hide fetch button */
+#loadBtn {
+    display: none;
+}
+
+input[type="text"] {
+    width: calc(100% - 20px);
+    flex: 1;
+    padding: 10px;
+    border-radius: 2px;
+    border: none;
+    color: white;
+    border-bottom: 1px solid #363636;
+    background-color: transparent;
+    font-size: 15px;
+}
+
+input:focus {
+    outline: none;
+    background-color: transparent;
+}
+
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+    /* match your input bg */
+    -webkit-text-fill-color: #fff !important;
+    /* match your text color */
+    transition: background-color 5000s ease-in-out 0s;
+    /* keeps bg persistent */
+}
+
+/* For Firefox */
+input:-moz-autofill {
+    box-shadow: 0 0 0px 1000px transparent inset !important;
+    -moz-text-fill-color: #fff !important;
+}
+
+#loadBtn {
+    display: flex;
+    margin: 10px 0 10px auto;
+    padding: 10px 25px;
+    width: min-content;
+    border-radius: 2px;
+    background-color: transparent;
+    color: white;
+    border: 1px solid #363636;
+    cursor: pointer;
+}
+
+.details {
+    margin-top: 10px;
+    line-height: 23px;
+}
+
+.chart-block {
+    margin-top: 10px;
+    border-radius: 8px;
+    background: #000000;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.04);
+}
+
+canvas {
+    width: 100% !important;
+    max-height: 250px;
+    display: block;
+    border: 1px solid #1b1b1b;
+    border-radius: 4px;
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 18px;
+    font-size: 13px;
+    border-radius: 7px;
+    min-width: 600px;
+}
+
+th,
+td {
+    border: 1px solid #1b1b1b;
+    padding: 8px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+th {
+    background: #1b1b1b;
+}
+
+tr:nth-child(even) {
+    background: #0f0f0f;
+}
+tr:hover {
+    background: rgb(25, 21, 0);
+    color: gold;
+}
+.content {
+    margin: 15px;
+}
+#logSection {
+    display: none;
+    margin-top: 20px;
+    border: 1px solid #363636;
+    border-radius: 5px;
+    background-color: #0f0f0f;
+}
+#logSection summary {
+    padding: 10px;
+    cursor: pointer;
+    user-select: none;
+}
+
+#chName {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.msg {
+    position: absolute;
+    visibility: hidden;
+    top: 30px;
+    left: 10px;
+    z-index: 5;
+    opacity: 0;
+    padding: 5px;
+    width: calc(100vw - 30px);
+    border-radius: 2px;
+    background-color: #0f0b00;
+    border: 1px solid #9b6d00;
+    color: #eda600;
+    transition: visibility 0.3s, opacity 0.3s linear, top 0.3s ease-out;
+}

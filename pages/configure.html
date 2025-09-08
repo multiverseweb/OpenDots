@@ -1,0 +1,33 @@
+<div class="container">
+    <div class="inputs">
+        <select id="sourceSelect">
+            <option value="DataSource" disabled selected>Data Source</option>
+            <option value="mqtt">MQTT</option>
+            <option value="thingspeak">ThingSpeak</option>
+            <option value="adafruit">Adafruit IO</option>
+            <option value="blynk">Blynk</option>
+            <option value="grafana">Grafana</option>
+        </select>
+        <div id="dynamicInputs" class="row"></div>
+        <button id="loadBtn">Fetch</button>
+    </div>
+
+    <div class="content">
+        <div id="details" class="details" style="display:none;">
+            <div><span id="chName"></span></div>
+            <div><span id="chDesc"></span></div> <br>
+            <div>Created: <span id="chCreated"></span> &nbsp; Updated: <span id="chUpdated"></span></div> <br>
+            <div>Detected fields: <span id="chFields"></span></div>
+        </div>
+
+        <div id="chartsContainer"></div>
+        <details id="logSection">
+            <summary>Data Logs</summary>
+            <div class="table-wrapper">
+                <div id="tableContainer"></div>
+            </div>
+        </details>
+        <div id="message" class="msg"></div>
+    </div>
+</div>
+<script src="/script.js"></script>
