@@ -222,6 +222,33 @@ async function fetchGrafana(url, token, query) {
 
 // ---------- RENDER ----------
 function renderData(data) {
+    const getSlicerValue = () =>
+        document.querySelector('input[name="slicer"]:checked')?.value || "50";
+
+    const applySlicer = () => {
+        let count = getSlicerValue();
+        let feeds = data.feeds;
+        let labels = data.labels;
+
+        if (count !== "all") {
+            const n = parseInt(count);
+            feeds = feeds.slice(-n);
+            labels = labels.slice(-n);
+        }
+
+        renderChartsAndTable({ ...data, feeds, labels });
+    };
+
+    // Bind slicer events (only once)
+    document.querySelectorAll('input[name="slicer"]').forEach(radio => {
+        radio.onchange = applySlicer;
+    });
+
+    // Initial render
+    applySlicer();
+}
+
+function renderChartsAndTable(data) {
     // Details
     document.getElementById("details").style.display = "block";
     document.getElementById("chName").textContent = data.name;
@@ -300,5 +327,6 @@ function renderData(data) {
             return `<tr><td>${data.labels[i] ?? "-"}</td>${cols.join("")}</tr>`;
         })
         .join("");
-    document.getElementById("tableContainer").innerHTML = `<table><thead>${thead}</thead><tbody>${rows}</tbody></table>`;
+    document.getElementById("tableContainer").innerHTML =
+        `<table><thead>${thead}</thead><tbody>${rows}</tbody></table>`;
 }

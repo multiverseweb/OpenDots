@@ -17,8 +17,28 @@
             <div><span id="chName"></span></div>
             <div><span id="chDesc"></span></div> <br>
             <div>Created: <span id="chCreated"></span> &nbsp; Updated: <span id="chUpdated"></span></div> <br>
-            <div>Detected fields: <span id="chFields"></span></div>
+            <div>Fields: <span id="chFields"></span></div>
         </div>
+
+        <div class="filter">
+            <div id="slicerGroup" class="slicer">
+                <input type="radio" id="slicer5" name="slicer" value="5">
+                <label for="slicer5">5</label>
+
+                <input type="radio" id="slicer20" name="slicer" value="20">
+                <label for="slicer20">20</label>
+
+                <input type="radio" id="slicer50" name="slicer" value="50" checked>
+                <label for="slicer50">50</label>
+
+                <input type="radio" id="slicer100" name="slicer" value="100">
+                <label for="slicer100">100</label>
+
+                <input type="radio" id="slicerAll" name="slicer" value="all">
+                <label for="slicerAll">All</label>
+            </div>
+        </div>
+
 
         <div id="chartsContainer"></div>
         <details id="logSection">
