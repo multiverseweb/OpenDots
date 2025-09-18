@@ -5,7 +5,7 @@ const inputsConfig = {
         { id: "port", placeholder: "Port" },
         { id: "topic", placeholder: "Topic" }
     ],
-    thingspeak: [{ id: "channelId", placeholder: "Channel ID" }],
+    thingspeak: [{ id: "channelId", placeholder: "Channel ID e.g. 2890599" }],
     adafruit: [
         { id: "username", placeholder: "Username" },
         { id: "key", placeholder: "AIO Key" },
