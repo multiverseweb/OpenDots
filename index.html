@@ -21,56 +21,61 @@
         </div>
         <p>●.◦ OpenDots</p>
     </div>
-    <section data-include="app/src/pages/configure.html"></section>
+    <section class="container">
+        <div id="msg-container">
+        </div>
+        <div class="inputs">
+            <select id="sourceSelect">
+                <option value="DataSource" disabled selected>Data Source</option>
+                <option value="mqtt">MQTT</option>
+                <option value="thingspeak">ThingSpeak</option>
+                <option value="adafruit">Adafruit IO</option>
+                <option value="blynk">Blynk</option>
+                <option value="grafana">Grafana</option>
+            </select>
+            <div id="dynamicInputs" class="row"></div>
+            <button id="loadBtn" onclick="loadData()">Fetch</button>
+        </div>
 
-    <script>
-        async function loadComponents() {
-            const elements = document.querySelectorAll("[data-include]");
+        <div class="content">
+            <div id="details" class="details" style="display:none;">
+                <div><span id="chName"></span></div>
+                <div><span id="chDesc"></span></div> <br>
+                <div>Created: <span id="chCreated"></span> &nbsp; Updated: <span id="chUpdated"></span></div> <br>
+                <div>Fields: <span id="chFields"></span></div>
+            </div>
 
-            // Detect if running on GitHub Pages or locally
-            const pathParts = window.location.pathname.split("/");
-            const isLocal = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
-            const base = isLocal
-                ? "" // local → no repo prefix
-                : `/${pathParts[1]}/`; // GitHub Pages → "/OpenDots/"
+            <div class="filter">
+                <div id="slicerGroup" class="slicer">
+                    <input type="radio" id="slicer5" name="slicer" value="5">
+                    <label for="slicer5">5</label>
 
-            for (const el of elements) {
-                const file = el.getAttribute("data-include");
-                const filePath = base + file.replace(/^\/+/, ""); // remove any extra "/"
+                    <input type="radio" id="slicer20" name="slicer" value="20">
+                    <label for="slicer20">20</label>
 
-                try {
-                    const res = await fetch(filePath);
-                    if (!res.ok) throw new Error(`Failed to load ${filePath}`);
-                    const html = await res.text();
-                    el.innerHTML = html;
+                    <input type="radio" id="slicer50" name="slicer" value="50" checked>
+                    <label for="slicer50">50</label>
 
-                    // Re-run any scripts inside loaded HTML
-                    const scripts = el.querySelectorAll("script");
-                    scripts.forEach(oldScript => {
-                        const newScript = document.createElement("script");
-                        if (oldScript.src) {
-                            const src = oldScript.getAttribute("src");
-                            newScript.src = src.startsWith("http")
-                                ? src
-                                : base + src.replace(/^\/+/, "");
-                        } else {
-                            newScript.textContent = oldScript.textContent;
-                        }
-                        [...oldScript.attributes].forEach(attr =>
-                            newScript.setAttribute(attr.name, attr.value)
-                        );
-                        oldScript.replaceWith(newScript);
-                    });
-                } catch (err) {
-                    el.innerHTML = `<p style="color:red;">Error loading ${filePath}</p>`;
-                    console.error(err);
-                }
-            }
-        }
+                    <input type="radio" id="slicer100" name="slicer" value="100">
+                    <label for="slicer100">100</label>
 
-        document.addEventListener("DOMContentLoaded", loadComponents);
-    </script>
+                    <input type="radio" id="slicerAll" name="slicer" value="all">
+                    <label for="slicerAll">All</label>
+                </div>
+            </div>
 
+
+            <div id="chartsContainer"></div>
+            <details id="logSection">
+                <summary>Data Logs</summary>
+                <div class="table-wrapper">
+                    <div id="tableContainer"></div>
+                </div>
+            </details>
+        </div>
+    </section>
+    <script src="/app/src/scripts/script.js"></script>
+    <script src="/app/src/scripts/load.js"></script>
 </body>
 
 </html>

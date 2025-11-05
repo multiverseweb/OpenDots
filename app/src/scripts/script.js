@@ -1,4 +1,12 @@
-// ---------- CONFIG ----------
+const sourceSelect = document.getElementById("sourceSelect");
+const loadBtn = document.getElementById("loadBtn");
+const container = document.getElementById("dynamicInputs");
+
+if (!sourceSelect || !loadBtn || !container) {
+    showMessage("Error: Required UI elements are missing.");
+}
+
+// Input configurations
 const inputsConfig = {
     mqtt: [
         { id: "broker", placeholder: "MQTT Broker" },
@@ -22,63 +30,51 @@ const inputsConfig = {
     ]
 };
 
-const colors = ["#ffbb00", "#00fcf8", "#00fc47", "#9b59b6", "#f2994a", "#17a2a8", "#e67e22", "#34495e"];
-let charts = [];
+// ---------- EVENT: Source Change ----------
+sourceSelect.addEventListener("change", () => {
+    resetUI();
+    renderInputs();
+});
 
-// ---------- UI ----------
-document.getElementById("sourceSelect").addEventListener("change", renderInputs);
-const loadBtn = document.getElementById("loadBtn");
-loadBtn.addEventListener("click", loadData);
-
+// ---------- FUNCTION: Render Inputs ----------
 function renderInputs() {
-    const source = document.getElementById("sourceSelect").value;
-    const container = document.getElementById("dynamicInputs");
+    const source = sourceSelect.value;
     container.innerHTML = "";
 
-    if (!inputsConfig[source]) {
+    if (!source || !inputsConfig[source]) {
         loadBtn.style.display = "none";
         return;
     }
 
     inputsConfig[source].forEach(inp => {
-        container.insertAdjacentHTML(
-            "beforeend",
-            `<input type="text" id="${inp.id}" placeholder="${inp.placeholder}">`
-        );
+        const inputEl = document.createElement("input");
+        inputEl.type = "text";
+        inputEl.id = inp.id;
+        inputEl.placeholder = inp.placeholder;
+        container.appendChild(inputEl);
     });
 
     loadBtn.style.display = "flex";
 }
 
-renderInputs();
-
-// ---------- HELPERS ----------
+// ---------- FUNCTION: Reset UI ----------
 function resetUI() {
-    ["chName", "chDesc", "chCreated", "chUpdated", "chFields"].forEach(id => {
-        document.getElementById(id).textContent = "";
+    const idsToClear = ["chName", "chDesc", "chCreated", "chUpdated", "chFields"];
+    idsToClear.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = "";
     });
-    document.getElementById("details").style.display = "none";
-    document.getElementById("chartsContainer").innerHTML = "";
-    document.getElementById("tableContainer").innerHTML = "";
-    document.getElementById("logSection").style.display = "none";
-    hideMessage();
+
+    const clearSections = ["details", "chartsContainer", "tableContainer", "logSection"];
+    clearSections.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (id === "chartsContainer" || id === "tableContainer") el.innerHTML = "";
+        else el.style.display = "none";
+    });
 }
 
-function showMessage(msg) {
-    const el = document.getElementById("message");
-    el.textContent = msg;
-    el.style.visibility = "visible";
-    el.style.opacity = "1";
-    el.style.top = "60px";
-    setTimeout(() => hideMessage(), 2000);
-}
-function hideMessage() {
-    const el = document.getElementById("message");
-    el.style.visibility = "hidden";
-    el.style.opacity = "0";
-    el.style.top = "5px";
-    el.textContent = "";
-}
+
 function escapeHtml(s) {
     return s.replace(/[&<>"']/g, c => ({
         "&": "&amp;",
@@ -89,14 +85,15 @@ function escapeHtml(s) {
     }[c]));
 }
 
+const colors = ["#ffbb00", "#00fcf8", "#00fc47", "#9b59b6", "#f2994a", "#17a2a8", "#e67e22", "#34495e"];
+let charts = [];
+
 // ---------- DATA LOADER ----------
 async function loadData() {
     const btn = loadBtn;
     const originalHTML = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = `<img src="/app/resrc/loading.gif" style="height:15px;vertical-align:middle;" class="loading">&nbsp;Fetching...`;
-
-    resetUI();
     const source = document.getElementById("sourceSelect").value;
 
     // Validate required fields
@@ -114,23 +111,23 @@ async function loadData() {
             source === "thingspeak"
                 ? await fetchThingSpeak(document.getElementById("channelId").value)
                 : source === "adafruit"
-                ? await fetchAdafruit(
-                      document.getElementById("username").value,
-                      document.getElementById("key").value,
-                      document.getElementById("feed").value
-                  )
-                : source === "blynk"
-                ? await fetchBlynk(
-                      document.getElementById("auth").value,
-                      document.getElementById("pin").value
-                  )
-                : source === "grafana"
-                ? await fetchGrafana(
-                      document.getElementById("url").value,
-                      document.getElementById("token").value,
-                      document.getElementById("query").value
-                  )
-                : null;
+                    ? await fetchAdafruit(
+                        document.getElementById("username").value,
+                        document.getElementById("key").value,
+                        document.getElementById("feed").value
+                    )
+                    : source === "blynk"
+                        ? await fetchBlynk(
+                            document.getElementById("auth").value,
+                            document.getElementById("pin").value
+                        )
+                        : source === "grafana"
+                            ? await fetchGrafana(
+                                document.getElementById("url").value,
+                                document.getElementById("token").value,
+                                document.getElementById("query").value
+                            )
+                            : null;
 
         if (data) renderData(data);
     } catch (err) {
