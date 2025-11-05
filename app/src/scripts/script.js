@@ -47,7 +47,7 @@ function renderInputs() {
         );
     });
 
-    loadBtn.style.display = "inline-block";
+    loadBtn.style.display = "flex";
 }
 
 renderInputs();
@@ -94,7 +94,7 @@ async function loadData() {
     const btn = loadBtn;
     const originalHTML = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = `<img src="/app/resrc/loading.gif" style="height:15px;vertical-align:middle;" class="loading"> Fetching...`;
+    btn.innerHTML = `<img src="/app/resrc/loading.gif" style="height:15px;vertical-align:middle;" class="loading">&nbsp;Fetching...`;
 
     resetUI();
     const source = document.getElementById("sourceSelect").value;
