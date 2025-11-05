@@ -135,7 +135,6 @@ async function loadData() {
         if (data) renderData(data);
     } catch (err) {
         showMessage("Error: " + err.message);
-        console.error(err);
     } finally {
         btn.disabled = false;
         btn.innerHTML = originalHTML;

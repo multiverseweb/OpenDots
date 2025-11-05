@@ -23,44 +23,54 @@
     </div>
     <section data-include="app/src/pages/configure.html"></section>
 
-</body>
-<script>
-    async function loadComponents() {
-        const elements = document.querySelectorAll("[data-include]");
+    <script>
+        async function loadComponents() {
+            const elements = document.querySelectorAll("[data-include]");
 
-        for (const el of elements) {
-            const file = el.getAttribute("data-include");
-            try {
-                const res = await fetch(file);
-                if (!res.ok) throw new Error(`Failed to load ${file}`);
-                const html = await res.text();
+            // Detect if running on GitHub Pages or locally
+            const pathParts = window.location.pathname.split("/");
+            const isLocal = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
+            const base = isLocal
+                ? "" // local → no repo prefix
+                : `/${pathParts[1]}/`; // GitHub Pages → "/OpenDots/"
 
-                // Insert HTML
-                el.innerHTML = html;
+            for (const el of elements) {
+                const file = el.getAttribute("data-include");
+                const filePath = base + file.replace(/^\/+/, ""); // remove any extra "/"
 
-                // Re-run scripts inside the loaded content
-                const scripts = el.querySelectorAll("script");
-                scripts.forEach(oldScript => {
-                    const newScript = document.createElement("script");
-                    if (oldScript.src) {
-                        newScript.src = oldScript.src;  // external script
-                    } else {
-                        newScript.textContent = oldScript.textContent; // inline script
-                    }
-                    // copy attributes (async, defer, type, etc.)
-                    [...oldScript.attributes].forEach(attr =>
-                        newScript.setAttribute(attr.name, attr.value)
-                    );
-                    oldScript.replaceWith(newScript);
-                });
-            } catch (err) {
-                el.innerHTML = `<p style="color:red;">Error loading ${file}</p>`;
-                console.error(err);
+                try {
+                    const res = await fetch(filePath);
+                    if (!res.ok) throw new Error(`Failed to load ${filePath}`);
+                    const html = await res.text();
+                    el.innerHTML = html;
+
+                    // Re-run any scripts inside loaded HTML
+                    const scripts = el.querySelectorAll("script");
+                    scripts.forEach(oldScript => {
+                        const newScript = document.createElement("script");
+                        if (oldScript.src) {
+                            const src = oldScript.getAttribute("src");
+                            newScript.src = src.startsWith("http")
+                                ? src
+                                : base + src.replace(/^\/+/, "");
+                        } else {
+                            newScript.textContent = oldScript.textContent;
+                        }
+                        [...oldScript.attributes].forEach(attr =>
+                            newScript.setAttribute(attr.name, attr.value)
+                        );
+                        oldScript.replaceWith(newScript);
+                    });
+                } catch (err) {
+                    el.innerHTML = `<p style="color:red;">Error loading ${filePath}</p>`;
+                    console.error(err);
+                }
             }
         }
-    }
-    document.addEventListener("DOMContentLoaded", loadComponents);
 
-</script>
+        document.addEventListener("DOMContentLoaded", loadComponents);
+    </script>
+
+</body>
 
 </html>
