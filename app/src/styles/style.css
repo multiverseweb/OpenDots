@@ -255,7 +255,7 @@ tr:hover {
     opacity: 0;
     padding: 5px;
     width: calc(100vw - 45px);
-    max-width: 300px;
+    max-width: 400px;
     border-radius: 5px;
     background-color: #0f0b00;
     border: 1px solid #9b6d00;
