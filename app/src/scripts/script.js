@@ -13,7 +13,7 @@ const inputsConfig = {
         { id: "port", placeholder: "Port" },
         { id: "topic", placeholder: "Topic" }
     ],
-    thingspeak: [{ id: "channelId", placeholder: "Channel ID e.g. 2890599" }],
+    thingspeak: [{ id: "channelId", placeholder: "Channel ID e.g. 357142" }],
     adafruit: [
         { id: "username", placeholder: "Username" },
         { id: "key", placeholder: "AIO Key" },
@@ -85,7 +85,15 @@ function escapeHtml(s) {
     }[c]));
 }
 
-const colors = ["#ffbb00", "#00fcf8", "#00fc47", "#9b59b6", "#f2994a", "#17a2a8", "#e67e22", "#34495e"];
+const colors = [
+    "#fde725",
+    "#5ec962",
+    "#21918c",
+    "#3b528b",
+    "#f89540",
+    "#cc4778",
+    "#7e03a8",
+];
 let charts = [];
 
 // ---------- DATA LOADER ----------
@@ -93,7 +101,7 @@ async function loadData() {
     const btn = loadBtn;
     const originalHTML = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = `<img src="/app/resrc/loading.gif" style="height:15px;vertical-align:middle;" class="loading">&nbsp;Fetching...`;
+    btn.innerHTML = `<img src="app/resrc/loading.gif" style="height:15px;vertical-align:middle;" class="loading">&nbsp;Fetching...`;
     const source = document.getElementById("sourceSelect").value;
 
     // Validate required fields
@@ -140,7 +148,7 @@ async function loadData() {
 
 // ---------- FETCHERS ----------
 async function fetchThingSpeak(channelId) {
-    const res = await fetch(`https://api.thingspeak.com/channels/${channelId}/feeds.json?results=50`);
+    const res = await fetch(`https://api.thingspeak.com/channels/${channelId}/feeds.json`);
     if (!res.ok) throw new Error("ThingSpeak fetch failed");
     const json = await res.json();
 
@@ -162,7 +170,7 @@ async function fetchThingSpeak(channelId) {
 }
 
 async function fetchAdafruit(user, key, feed) {
-    const res = await fetch(`https://io.adafruit.com/api/v2/${user}/feeds/${feed}/data?limit=50`, {
+    const res = await fetch(`https://io.adafruit.com/api/v2/${user}/feeds/${feed}/data`, {
         headers: { "X-AIO-Key": key }
     });
     if (!res.ok) throw new Error("Adafruit fetch failed");
@@ -219,7 +227,7 @@ async function fetchGrafana(url, token, query) {
 // ---------- RENDER ----------
 function renderData(data) {
     const getSlicerValue = () =>
-        document.querySelector('input[name="slicer"]:checked')?.value || "50";
+        document.querySelector('input[name="slicer"]:checked')?.value || "all";
 
     const applySlicer = () => {
         let count = getSlicerValue();
@@ -243,7 +251,6 @@ function renderData(data) {
     // Initial render
     applySlicer();
 }
-
 function renderChartsAndTable(data) {
     // Details
     document.getElementById("details").style.display = "block";
@@ -259,7 +266,75 @@ function renderChartsAndTable(data) {
     charts.forEach(c => c.destroy());
     charts = [];
 
-    // Charts
+    // ✅ Combined chart (All data together)
+    const combinedBlock = document.createElement("div");
+    combinedBlock.className = "chart-block";
+    combinedBlock.innerHTML = `<h3>All Data Overview</h3><canvas style="width:100%; height:auto;"></canvas>`;
+    chartsContainer.appendChild(combinedBlock);
+
+    const combinedCtx = combinedBlock.querySelector("canvas").getContext("2d");
+
+    const datasets = data.fields.map((field, idx) => {
+        const color = colors[idx % colors.length];
+        const values = data.feeds.map(f => {
+            const v = f[field.key];
+            const n = Number(v);
+            return isFinite(n) ? n : null;
+        });
+        if (!values.some(v => v !== null)) return null;
+        return {
+            label: field.label,
+            data: values,
+            borderColor: color,
+            borderWidth: 1,
+            fill: false,
+            tension: 0.2,
+            pointRadius: 0,
+            pointHoverRadius: 3
+        };
+    }).filter(Boolean);
+
+    const combinedChart = new Chart(combinedCtx, {
+        type: "line",
+        data: {
+            labels: data.labels,
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 2.5, // allow it to shrink naturally
+            plugins: {
+                legend: {
+                    display: true,
+                    position: "top",
+                    align: "start"
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: data.xLabel || "Timestamp"
+                    },
+                    ticks: {
+                        maxRotation: 90,
+                        minRotation: 90, // 🔥 forces exact vertical labels
+                        autoSkip: true
+                    },
+                    grid: { color: "#2c2c2cff" }
+                },
+                y: {
+                    title: { display: true, text: "Values" },
+                    grid: { color: "#2c2c2cff" }
+                }
+            }
+        }
+    });
+
+    charts.push(combinedChart);
+
+    // ✅ Individual charts
     data.fields.forEach((field, idx) => {
         const values = data.feeds.map(f => {
             const v = f[field.key];
@@ -270,7 +345,7 @@ function renderChartsAndTable(data) {
 
         const block = document.createElement("div");
         block.className = "chart-block";
-        block.innerHTML = `<h3>${field.label}</h3><canvas></canvas>`;
+        block.innerHTML = `<h3>${field.label}</h3><canvas style="width:100%; height:auto;"></canvas>`;
         chartsContainer.appendChild(block);
 
         const ctx = block.querySelector("canvas").getContext("2d");
@@ -283,7 +358,7 @@ function renderChartsAndTable(data) {
                     label: field.label,
                     data: values,
                     borderColor: color,
-                    borderWidth: 0.7,
+                    borderWidth: 1,
                     fill: true,
                     tension: 0.2,
                     pointRadius: 0,
@@ -300,18 +375,40 @@ function renderChartsAndTable(data) {
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: true, position: "top" } },
+                maintainAspectRatio: true,
+                aspectRatio: 2.5,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: "top",
+                        align: "start"
+                    }
+                },
                 scales: {
-                    x: { title: { display: true, text: "Timestamp" }, grid: { color: "#121212" } },
-                    y: { title: { display: true, text: field.label }, grid: { color: "#121212" } }
+                    x: {
+                        title: {
+                            display: true,
+                            text: data.xLabel || "Timestamp"
+                        },
+                        ticks: {
+                            maxRotation: 90,
+                            minRotation: 90, // 🔥 exactly vertical timestamps
+                            autoSkip: true
+                        },
+                        grid: { color: "#2c2c2cff" }
+                    },
+                    y: {
+                        title: { display: true, text: field.label },
+                        grid: { color: "#2c2c2cff" }
+                    }
                 }
             }
         });
+
         charts.push(chart);
     });
 
-    // Table
+    // ✅ Table
     document.getElementById("logSection").style.display = "block";
     let thead = `<tr><th>Time</th>${data.fields.map(f => `<th>${f.label}</th>`).join("")}</tr>`;
     let rows = data.feeds
@@ -326,3 +423,38 @@ function renderChartsAndTable(data) {
     document.getElementById("tableContainer").innerHTML =
         `<table><thead>${thead}</thead><tbody>${rows}</tbody></table>`;
 }
+
+const dividers = document.querySelectorAll('.divider');
+let isDragging = false;
+let currentDivider;
+
+dividers.forEach(divider => {
+    divider.addEventListener('mousedown', e => {
+        isDragging = true;
+        currentDivider = divider;
+        document.body.style.cursor = 'col-resize';
+    });
+});
+
+document.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+
+    const container = document.querySelector('.container');
+    const rect = container.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+
+    if (currentDivider.id === 'divider1') {
+        const newWidth = Math.min(Math.max(x, 200), 500);
+        document.getElementById('config').style.width = `${newWidth}px`;
+    } else if (currentDivider.id === 'divider2') {
+        const containerWidth = rect.width;
+        const rightX = containerWidth - (e.clientX - rect.left);
+        const newWidth = Math.min(Math.max(rightX, 200), 500);
+        document.getElementById('ai').style.width = `${newWidth}px`;
+    }
+});
+
+document.addEventListener('mouseup', () => {
+    isDragging = false;
+    document.body.style.cursor = 'default';
+});

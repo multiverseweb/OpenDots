@@ -5,14 +5,17 @@
 
 body {
     font-family: "poppins", sans-serif;
-    font-weight: 100;
-    background: #151515;
+    background: #000000;
     color: #e7e7e7;
     margin: 0;
 }
 
+::-webkit-scrollbar {
+    display: none;
+}
+
 section {
-    padding-top: 70px;
+    padding-top: 50px;
 }
 
 .loading {
@@ -23,8 +26,8 @@ section {
     position: fixed;
     top: 0;
     left: 0;
-    background-color: #151515;
-    box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.83);
+    background-color: #000000;
+    border-bottom: 1px solid #3d3d3d;
     padding: 10px;
     width: calc(100% - 20px);
     z-index: 10;
@@ -43,9 +46,9 @@ section {
     height: 17px;
     padding: 7px;
     cursor: pointer;
-    background-color: #0b0b0b;
     border-radius: 5px;
     cursor: pointer;
+    border: 1px solid #313131;
 }
 
 #burger {
@@ -61,26 +64,48 @@ section {
     background-color: #fff;
 }
 
-#msg-container{
-    position: fixed;
-    top: 70px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    height: auto;
-    width: calc(100vw - 40px);
-}
 .container {
-    max-width: 500px;
-    margin: auto;
-    border-radius: 10px;
+    display: flex;
+    height: calc(100vh - 50px);
+    width: 100vw;
+    overflow: hidden;
 }
 
-.inputs {
+#config,
+#ai {
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    margin: 15px;
+    padding: 15px;
+    border-color: #3d3d3d;
 }
+
+#config {
+    width: 300px;
+}
+
+#ai {
+    width: 300px;
+}
+
+#dashboard {
+    flex-grow: 1;
+    padding: 15px;
+    overflow-y: auto;
+}
+
+/* Resizable dividers */
+.divider {
+    width: 2px;
+    cursor: col-resize;
+    background: #2e2e2e;
+    transition: background 0.2s;
+}
+
+.divider:hover {
+    background: #5a5a5a;
+}
+
 
 select {
     padding: 0 5px;
@@ -88,12 +113,12 @@ select {
     border-radius: 2px;
     border: none;
     color: white;
-    background-color: #0b0b0b;
+    background-color: #151515;
     border-radius: 5px;
 }
 
 select:focus {
-    background-color: #0b0b0b;
+    background-color: #151515;
     outline: none;
 }
 
@@ -106,17 +131,17 @@ input[type="text"] {
     width: calc(100% - 20px);
     flex: 1;
     padding: 10px;
-    margin-top: 5px;
+    margin-top: 10px;
     border: none;
     color: white;
-    background-color: #0b0b0b;
+    background-color: #151515;
     border-radius: 5px;
     font-size: 15px;
 }
 
 input:focus {
     outline: none;
-    background-color: #0b0b0b;
+    background-color: #151515;
 }
 
 input:-webkit-autofill {
@@ -141,7 +166,7 @@ input:-moz-autofill {
     padding: 10px 25px;
     width: min-content;
     border-radius: 5px;
-    background-color: #0b0b0b;
+    background-color: #151515;
     border: none;
     color: white;
     cursor: pointer;
@@ -168,14 +193,13 @@ input:-moz-autofill {
     border-radius: 20px;
     cursor: pointer;
     font-size: 14px;
-    background: #0b0b0b;
+    background: #151515;
     color: #eee;
-    transition: all 0.25s ease;
+    border: 1px solid #151515;
 }
 
 .slicer label:hover {
     background: #2a2a2a;
-    border-color: #666;
 }
 
 .slicer input[type="radio"]:checked+label {
@@ -185,19 +209,44 @@ input:-moz-autofill {
     color: rgb(1, 185, 185);
 }
 
+#chartsContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    /* fills all available space */
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: stretch;
+    /* ensures full width usage */
+    align-items: start;
+}
 
 .chart-block {
-    margin-top: 10px;
-    border-radius: 8px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.04);
+    padding: 5px;
+    width: 100%;
+    /* fill grid cell */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    border: 1px solid #1a1a1a;
+    border-radius: 7px;
+    box-sizing: border-box;
 }
 
-canvas {
-    width: 100% !important;
-    max-height: 250px;
-    display: block;
-    border-radius: 4px;
+.chart-block h3 {
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 1rem;
 }
+
+/* Keep charts proportional without stretching */
+.chart-block canvas {
+    width: 100% !important;
+    height: 200px !important;
+    object-fit: contain;
+}
+
+
 
 .table-wrapper {
     width: 100%;
@@ -232,16 +281,13 @@ tr:nth-child(even) {
 tr:hover {
     background: rgb(25, 21, 0);
     color: rgb(255, 214, 0);
-    transition: background-color 0.3s, color 0.3s;
-}
-
-.content {
-    margin: 15px;
 }
 
 #logSection {
+    max-width: calc(100vw - 590px);
+    overflow-x: scroll;
     display: none;
-    margin-top: 20px;
+    margin: 20px 0;
     border-radius: 5px;
     background-color: #0f0f0f;
 }
@@ -257,6 +303,20 @@ tr:hover {
     font-weight: bold;
 }
 
+#msg-container {
+    position: fixed;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    height: auto;
+    width: calc(100vw - 40px);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
 .msg {
     visibility: hidden;
     margin-top: 5px;
@@ -270,4 +330,28 @@ tr:hover {
     border: 1px solid #9b6d00;
     color: #eda600;
     transition: visibility 0.3s, opacity 0.3s linear, transform 0.3s ease-out;
+}
+
+@media screen and (max-width: 900px) {
+
+    #config,
+    #ai,
+    #dashboard {
+        width: calc(100vw - 30px);
+    }
+
+    .container {
+        flex-direction: column;
+        position: relative;
+        height: auto;
+        width: calc(100vw);
+    }
+
+    .chart-block {
+        width: calc(100vw - 30px) !important;
+    }
+
+    #logSection {
+        max-width: calc(100vw - 30px);
+    }
 }
