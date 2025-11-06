@@ -14,7 +14,12 @@ body {
     display: none;
 }
 
-section {
+a{
+    text-decoration: none;
+    color: inherit;
+}
+
+main {
     padding-top: 50px;
 }
 
@@ -66,7 +71,7 @@ section {
 
 .container {
     display: flex;
-    height: calc(100vh - 50px);
+    height: calc(100vh - 70px);
     width: 100vw;
     overflow: hidden;
 }
@@ -246,8 +251,6 @@ input:-moz-autofill {
     object-fit: contain;
 }
 
-
-
 .table-wrapper {
     width: 100%;
     overflow-x: auto;
@@ -304,17 +307,10 @@ tr:hover {
 }
 
 #msg-container {
-    position: fixed;
-    top: 70px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
     height: auto;
-    width: calc(100vw - 40px);
     pointer-events: none;
     display: flex;
-    align-items: center;
-    flex-direction: column;
+    flex-direction: column-reverse;
 }
 
 .msg {
@@ -323,13 +319,23 @@ tr:hover {
     z-index: 5;
     opacity: 0;
     padding: 5px;
-    width: calc(100vw - 45px);
-    max-width: 400px;
+    width: calc(100% - 12px);
+    max-width: calc(100vw - 40px);
     border-radius: 5px;
     background-color: #0f0b00;
     border: 1px solid #9b6d00;
     color: #eda600;
     transition: visibility 0.3s, opacity 0.3s linear, transform 0.3s ease-out;
+}
+
+footer{
+    border-top: 1px solid #3d3d3d;
+    color: #777;
+    font-size: 12px;
+    line-height: 14px;
+    padding: 2px;
+    display: flex;
+    justify-content: space-between;
 }
 
 @media screen and (max-width: 900px) {
@@ -353,5 +359,14 @@ tr:hover {
 
     #logSection {
         max-width: calc(100vw - 30px);
+    }
+    #msg-container {
+        width: calc(100vw - 30px);
+        position: absolute;
+        justify-content: center;
+        align-items: center;
+    }
+    .msg{
+        width: 100%;
     }
 }
