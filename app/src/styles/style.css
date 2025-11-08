@@ -109,6 +109,7 @@ main {
 
 .divider:hover {
     background: #5a5a5a;
+    width: 5px;
 }
 
 
