@@ -91,6 +91,23 @@ main {
 
 #ai {
     width: 300px;
+    position: relative;
+}
+#ai input{
+    width: calc(100% - 20px);
+    border: 1px solid #313131;
+}
+
+#ai h4, #config h4 {
+    margin-bottom: 10px;
+}
+
+#response-container{
+    overflow-y: auto;
+    padding-bottom: 50px;
+    border: 1px solid #313131;
+    border-radius: 5px;
+    height: 100%;
 }
 
 #dashboard {
@@ -121,6 +138,7 @@ select {
     color: white;
     background-color: #151515;
     border-radius: 5px;
+    border: 1px solid #313131;
 }
 
 select:focus {
@@ -141,6 +159,7 @@ input[type="text"] {
     border: none;
     color: white;
     background-color: #151515;
+    border: 1px solid #313131;
     border-radius: 5px;
     font-size: 15px;
 }
@@ -176,6 +195,7 @@ input:-moz-autofill {
     border: none;
     color: white;
     cursor: pointer;
+    border: 1px solid #313131;
 }
 
 .details {
@@ -201,7 +221,7 @@ input:-moz-autofill {
     font-size: 14px;
     background: #151515;
     color: #eee;
-    border: 1px solid #151515;
+    border: 1px solid #313131;
 }
 
 .slicer label:hover {
