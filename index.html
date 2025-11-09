@@ -7,6 +7,7 @@
     <title>OpenDots</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
     <link rel="stylesheet" href="app/src/styles/style.css" />
+    <link rel="shortcut icon" href="app/resrc/images/OpenDots.png" type="image/x-icon">
 </head>
 
 <body>
@@ -17,9 +18,9 @@
                 <span></span>
                 <span></span>
             </div>
-            <img src="app/resrc/user.png" alt="Logo" class="headerIcon" id="user">
+            <img src="app/resrc/images/user.png" alt="user" class="headerIcon" id="user">
         </div>
-        <a href="index.html">●.◦ OpenDots</a>
+        <a href="index.html"><img src="app/resrc/images/OpenDots.png" alt="OpenDots" class="icon">OpenDots</a>
     </div>
     <main class="container">
         <div id="config">
@@ -48,23 +49,9 @@
             </div>
 
             <div class="filter">
-                <div id="slicerGroup" class="slicer">
-                    <input type="radio" id="slicer5" name="slicer" value="5">
-                    <label for="slicer5">5</label>
-
-                    <input type="radio" id="slicer20" name="slicer" value="20">
-                    <label for="slicer20">20</label>
-
-                    <input type="radio" id="slicer50" name="slicer" value="50">
-                    <label for="slicer50">50</label>
-
-                    <input type="radio" id="slicer100" name="slicer" value="100">
-                    <label for="slicer100">100</label>
-
-                    <input type="radio" id="slicerAll" name="slicer" value="all" checked>
-                    <label for="slicerAll">All</label>
-                </div>
+                <div id="slicerGroup" class="slicer"></div>
             </div>
+
             <div id="chartsContainer"></div>
             <details id="logSection">
                 <summary>Data Logs</summary>
@@ -75,13 +62,18 @@
         </div>
         <div class="divider" id="divider2"></div>
         <div id="ai">
-            <h4>Ask Infinity</h4>
+            <h4><img src="app/resrc/images/infinity.png" class="icon" alt="">Infinity</h4>
             <div id="response-container"></div>
-            <input type="text" placeholder="Type query here...">
+            <div class="ai-inputs">
+                <input type="text" placeholder="Type query here...">
+                <button id="sendBtn">></button>
+            </div>
         </div>
     </main>
     <footer>
-        <p>v1.0.0</p><p>&copy; 2025 Ojas Gupta & Tejas Gupta. | License: MIT | <a href="https://github.com/multiverseweb/OpenDots">GitHub</a></p>
+        <p>v1.0.0</p>
+        <p>&copy; 2025 Ojas Gupta & Tejas Gupta. | License: MIT | <a
+                href="https://github.com/multiverseweb/OpenDots">GitHub</a></p>
     </footer>
     <script src="app/src/scripts/script.js"></script>
     <script src="app/src/scripts/load.js"></script>

@@ -46,7 +46,6 @@ function showMessage(msg) {
     }, 3000);
 }
 
-
 function hideMessage() {
     const el = document.getElementById("message");
     if (!el) return;
@@ -59,4 +58,13 @@ function hideMessage() {
         el.style.visibility = "hidden";
         el.textContent = "";
     }, 500);
+}
+
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker
+            .register("service-worker.js")
+            .then(reg => console.log("✅ Service Worker registered:", reg.scope))
+            .catch(err => console.log("❌ Service Worker registration failed:", err));
+    });
 }

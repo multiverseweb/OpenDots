@@ -1,3 +1,7 @@
+Chart.defaults.interaction.mode = 'nearest';
+Chart.defaults.interaction.axis = 'x';
+Chart.defaults.interaction.intersect = false;
+Chart.defaults.plugins.tooltip.enabled = true;
 const sourceSelect = document.getElementById("sourceSelect");
 const loadBtn = document.getElementById("loadBtn");
 const container = document.getElementById("dynamicInputs");
@@ -30,6 +34,45 @@ const inputsConfig = {
     ]
 };
 
+function createDynamicSlicers(rowCount) {
+    const slicerGroup = document.getElementById("slicerGroup");
+    slicerGroup.innerHTML = ""; // clear old slicers
+
+    const slicerValues = new Set(); // fixed slicer
+    // generate slicers dynamically based on row count
+    if (rowCount > 2) slicerValues.add(2);
+    if (rowCount > 10) slicerValues.add(10);
+    if (rowCount > 20) slicerValues.add(20);
+    if (rowCount > 50) slicerValues.add(50);
+    if (rowCount > 100) slicerValues.add(100);
+
+    // sort numerically for neat order
+    const sorted = [...slicerValues].sort((a, b) => a - b);
+
+    // add slicer buttons
+    sorted.forEach(val => {
+        const id = `slicer${val}`;
+        slicerGroup.innerHTML += `
+      <input type="radio" id="${id}" name="slicer" value="${val}">
+      <label for="${id}">${val}</label>
+    `;
+    });
+
+    // always add "All" slicer last and make it default
+    slicerGroup.innerHTML += `
+    <input type="radio" id="slicerAll" name="slicer" value="all" checked>
+    <label for="slicerAll">All</label>
+  `;
+}
+
+// ✅ Copy Function
+function copyRowData(btn) {
+    const row = btn.closest("tr");
+    const json = row.getAttribute("data-json");
+    navigator.clipboard.writeText(json);
+    btn.textContent = "✅";
+    setTimeout(() => (btn.textContent = "📋"), 1000);
+}
 // ---------- EVENT: Source Change ----------
 sourceSelect.addEventListener("change", () => {
     resetUI();
@@ -101,7 +144,7 @@ async function loadData() {
     const btn = loadBtn;
     const originalHTML = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = `<img src="app/resrc/loading.gif" style="height:15px;vertical-align:middle;" class="loading">&nbsp;Fetching...`;
+    btn.innerHTML = `<img src="app/resrc/images/loading.gif" style="height:15px;vertical-align:middle;" class="loading">&nbsp;Fetching...`;
     const source = document.getElementById("sourceSelect").value;
 
     // Validate required fields
@@ -226,6 +269,7 @@ async function fetchGrafana(url, token, query) {
 
 // ---------- RENDER ----------
 function renderData(data) {
+    createDynamicSlicers(data.feeds.length);
     const getSlicerValue = () =>
         document.querySelector('input[name="slicer"]:checked')?.value || "all";
 
@@ -243,14 +287,13 @@ function renderData(data) {
         renderChartsAndTable({ ...data, feeds, labels });
     };
 
-    // Bind slicer events (only once)
     document.querySelectorAll('input[name="slicer"]').forEach(radio => {
         radio.onchange = applySlicer;
     });
 
-    // Initial render
     applySlicer();
 }
+
 function renderChartsAndTable(data) {
     // Details
     document.getElementById("details").style.display = "block";
@@ -408,20 +451,49 @@ function renderChartsAndTable(data) {
         charts.push(chart);
     });
 
-    // ✅ Table
+    // ✅ Table with Serial No + Hover Copy Button
     document.getElementById("logSection").style.display = "block";
-    let thead = `<tr><th>Time</th>${data.fields.map(f => `<th>${f.label}</th>`).join("")}</tr>`;
+
+    // Table Head
+    let thead = `<tr><th>#</th><th>Time</th>${data.fields.map(f => `<th>${f.label}</th>`).join("")}</tr>`;
+
+    // Table Rows
     let rows = data.feeds
         .map((f, i) => {
             const cols = data.fields.map(field => {
                 const v = f[field.key];
                 return `<td>${v ? escapeHtml(String(v)) : "-"}</td>`;
             });
-            return `<tr><td>${data.labels[i] ?? "-"}</td>${cols.join("")}</tr>`;
+            const time = data.labels[i] ?? "-";
+            const serial = i + 1;
+            const rowData = JSON.stringify(
+                Object.fromEntries([
+                    ["Time", time],
+                    ...data.fields.map(field => [field.label, f[field.key] ?? "-"])
+                ]),
+                null,
+                2
+            );
+
+            return `
+        <tr data-json='${escapeHtml(rowData)}'>
+            <td>
+                <button class="copy-btn" title="Copy JSON" onclick="copyRowData(this)">📋</button>${serial}
+            </td>
+            <td>${time}</td>
+            ${cols.join("")}
+        </tr>`;
         })
         .join("");
-    document.getElementById("tableContainer").innerHTML =
-        `<table><thead>${thead}</thead><tbody>${rows}</tbody></table>`;
+
+    // Render table
+    document.getElementById("tableContainer").innerHTML = `
+<table class="data-table">
+    <thead>${thead}</thead>
+    <tbody>${rows}</tbody>
+</table>`;
+
+    enableChartModal();
 }
 
 const dividers = document.querySelectorAll('.divider');
@@ -458,3 +530,52 @@ document.addEventListener('mouseup', () => {
     isDragging = false;
     document.body.style.cursor = 'default';
 });
+
+
+// Attach modal behavior to every chart canvas
+function enableChartModal() {
+    document.querySelectorAll('.chart-block canvas').forEach(canvas => {
+        canvas.addEventListener('click', () => openChartModal(canvas));
+    });
+}
+
+function openChartModal(originalCanvas) {
+    const modal = document.createElement('div');
+    modal.className = 'chart-modal active';
+    modal.innerHTML = `
+    <div class="chart-modal-content">
+      <span class="chart-modal-close">&times;</span>
+      <canvas></canvas>
+    </div>
+  `;
+    document.body.appendChild(modal);
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+        setTimeout(() => modal.remove(), 200);
+    };
+
+    modal.querySelector('.chart-modal-close').addEventListener('click', closeModal);
+    modal.addEventListener('click', e => {
+        if (e.target === modal) closeModal();
+    });
+
+    const ctx = modal.querySelector('canvas').getContext('2d');
+    const chart = Chart.getChart(originalCanvas);
+
+    if (chart) {
+        // Safe manual cloning (strip functions)
+        const chartData = JSON.parse(JSON.stringify(chart.data));
+        const chartOptions = JSON.parse(JSON.stringify(chart.options));
+
+        new Chart(ctx, {
+            type: chart.config.type,
+            data: chartData,
+            options: {
+                ...chartOptions,
+                responsive: true,
+                maintainAspectRatio: false,
+            },
+        });
+    }
+}
