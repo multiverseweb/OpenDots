@@ -41,6 +41,9 @@
         <div class="divider" id="divider1"></div>
 
         <div id="dashboard">
+            <div id="loader">
+                <l-line-spinner size="25" stroke="1.5" speed="1" color="white"></l-line-spinner>
+            </div>
             <div id="details" class="details" style="display:none;">
                 <div><span id="chName"></span></div>
                 <div><span id="chDesc"></span></div> <br>
@@ -62,11 +65,17 @@
         </div>
         <div class="divider" id="divider2"></div>
         <div id="ai">
-            <h4><img src="app/resrc/images/infinity.png" class="icon" alt="">Infinity</h4>
-            <div id="response-container"></div>
+            <div id="ai-header">
+                <h4><img src="app/resrc/images/infinity.png" class="icon" alt="">Infinity AI</h4>
+                <button id="clearBtn" onclick="clearChat()">Clear</button>
+            </div>
+            <div id="response-container">
+                <div class="ai-response">Hi! I'm Infinity, your intelligent data assistant.
+                    Ask me anything about your sensor data — I'll visualize, summarize, and explain it for you.</div>
+            </div>
             <div class="ai-inputs">
-                <input type="text" placeholder="Type query here...">
-                <button id="sendBtn">></button>
+                <input type="text" id="query" placeholder="Type query here...">
+                <button id="sendBtn" onclick="ask()">></button>
             </div>
         </div>
     </main>
@@ -75,6 +84,8 @@
         <p>&copy; 2025 Ojas Gupta & Tejas Gupta. | License: MIT | <a
                 href="https://github.com/multiverseweb/OpenDots">GitHub</a></p>
     </footer>
+
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ldrs/dist/auto/lineSpinner.js"></script>
     <script src="app/src/scripts/script.js"></script>
     <script src="app/src/scripts/load.js"></script>
 </body>

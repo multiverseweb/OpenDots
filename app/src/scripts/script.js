@@ -5,6 +5,7 @@ Chart.defaults.plugins.tooltip.enabled = true;
 const sourceSelect = document.getElementById("sourceSelect");
 const loadBtn = document.getElementById("loadBtn");
 const container = document.getElementById("dynamicInputs");
+const loader = document.getElementById("loader");
 
 if (!sourceSelect || !loadBtn || !container) {
     showMessage("Error: Required UI elements are missing.");
@@ -63,6 +64,7 @@ function createDynamicSlicers(rowCount) {
     <input type="radio" id="slicerAll" name="slicer" value="all" checked>
     <label for="slicerAll">All</label>
   `;
+  slicerGroup.style.display = "flex";
 }
 
 // ✅ Copy Function
@@ -70,8 +72,8 @@ function copyRowData(btn) {
     const row = btn.closest("tr");
     const json = row.getAttribute("data-json");
     navigator.clipboard.writeText(json);
-    btn.textContent = "✅";
-    setTimeout(() => (btn.textContent = "📋"), 1000);
+    btn.innerHTML = `<img src="app/resrc/images/tick.png"">`;
+    setTimeout(() => (btn.innerHTML = `<img src="app/resrc/images/copy.png">`), 1000);
 }
 // ---------- EVENT: Source Change ----------
 sourceSelect.addEventListener("change", () => {
@@ -108,7 +110,7 @@ function resetUI() {
         if (el) el.textContent = "";
     });
 
-    const clearSections = ["details", "chartsContainer", "tableContainer", "logSection"];
+    const clearSections = ["details", "chartsContainer", "tableContainer", "logSection", "slicerGroup"];
     clearSections.forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
@@ -141,10 +143,11 @@ let charts = [];
 
 // ---------- DATA LOADER ----------
 async function loadData() {
+    loader.classList.add("visible");
     const btn = loadBtn;
     const originalHTML = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = `<img src="app/resrc/images/loading.gif" style="height:15px;vertical-align:middle;" class="loading">&nbsp;Fetching...`;
+    btn.innerHTML = `<l-line-spinner size="14" stroke="1" speed="1" color="white" style="vertical-align:middle; margin-right: 10px;"></l-line-spinner> Fetching...`;
     const source = document.getElementById("sourceSelect").value;
 
     // Validate required fields
@@ -153,6 +156,8 @@ async function loadData() {
         if (!val) {
             btn.disabled = false;
             btn.innerHTML = originalHTML;
+            loader.classList.remove("visible");
+            resetUI();
             return showMessage(`Please enter a valid ${f.placeholder}.`);
         }
     }
@@ -182,10 +187,13 @@ async function loadData() {
 
         if (data) renderData(data);
     } catch (err) {
+        resetUI();
         showMessage("Error: " + err.message);
+        loader.classList.remove("visible");
     } finally {
         btn.disabled = false;
         btn.innerHTML = originalHTML;
+        loader.classList.remove("visible");
     }
 }
 
@@ -478,7 +486,7 @@ function renderChartsAndTable(data) {
             return `
         <tr data-json='${escapeHtml(rowData)}'>
             <td>
-                <button class="copy-btn" title="Copy JSON" onclick="copyRowData(this)">📋</button>${serial}
+                <button class="copy-btn" title="Copy JSON" onclick="copyRowData(this)"><img src="app/resrc/images/copy.png""></button>${serial}
             </td>
             <td>${time}</td>
             ${cols.join("")}
@@ -578,4 +586,21 @@ function openChartModal(originalCanvas) {
             },
         });
     }
+}
+
+function ask(){
+    const queryInput = document.getElementById("query");
+    const query = queryInput.value.trim();
+    const responseContainer = document.getElementById("response-container");
+    if(!query) return showMessage("Please enter a query for Infinity AI.");
+    queryInput.value = "";
+
+    responseContainer.innerHTML += `<div class="user-query">${query}</div>`;
+    responseContainer.innerHTML += `<div class="ai-response">I can't answer that right now as I am still under development.</div>`;
+    responseContainer.scrollTop = responseContainer.scrollHeight;
+}
+
+function clearChat(){
+    const responseContainer = document.getElementById("response-container");
+    responseContainer.innerHTML = "";
 }
