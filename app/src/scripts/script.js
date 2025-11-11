@@ -64,7 +64,7 @@ function createDynamicSlicers(rowCount) {
     <input type="radio" id="slicerAll" name="slicer" value="all" checked>
     <label for="slicerAll">All</label>
   `;
-  slicerGroup.style.display = "flex";
+    slicerGroup.style.display = "flex";
 }
 
 // ✅ Copy Function
@@ -141,6 +141,9 @@ const colors = [
 ];
 let charts = [];
 
+// ---------- GLOBAL VARIABLES ----------
+let data = null; // 🌍 Global variable
+
 // ---------- DATA LOADER ----------
 async function loadData() {
     loader.classList.add("visible");
@@ -163,7 +166,8 @@ async function loadData() {
     }
 
     try {
-        const data =
+        // Assign to global variable here 👇
+        data =
             source === "thingspeak"
                 ? await fetchThingSpeak(document.getElementById("channelId").value)
                 : source === "adafruit"
@@ -196,6 +200,7 @@ async function loadData() {
         loader.classList.remove("visible");
     }
 }
+
 
 // ---------- FETCHERS ----------
 async function fetchThingSpeak(channelId) {
@@ -277,6 +282,7 @@ async function fetchGrafana(url, token, query) {
 
 // ---------- RENDER ----------
 function renderData(data) {
+    console.log("Data loaded:", data);
     createDynamicSlicers(data.feeds.length);
     const getSlicerValue = () =>
         document.querySelector('input[name="slicer"]:checked')?.value || "all";
@@ -588,19 +594,64 @@ function openChartModal(originalCanvas) {
     }
 }
 
-function ask(){
+async function ask() {
     const queryInput = document.getElementById("query");
     const query = queryInput.value.trim();
     const responseContainer = document.getElementById("response-container");
-    if(!query) return showMessage("Please enter a query for Infinity AI.");
-    queryInput.value = "";
+    if (!query) return showMessage("Please enter a query for Infinity AI.");
 
+    // Reset input
+    queryInput.value = "";
     responseContainer.innerHTML += `<div class="user-query">${query}</div>`;
-    responseContainer.innerHTML += `<div class="ai-response">I can't answer that right now as I am still under development.</div>`;
+    responseContainer.innerHTML += `<div class="ai-response typing">Thinking...</div>`;
     responseContainer.scrollTop = responseContainer.scrollHeight;
+
+    try {
+        const apiKey = "";
+        const payload = {
+            contents: [{
+                role: "user",
+                parts: [{
+                    text: `
+You are Infinity AI, an intelligent assistant built into OpenDots. 
+Always respond in a single <div> that may contain text, tables, charts, lists, and optional <style> and <script> tags.
+User query: ${query}
+Data: ${JSON.stringify(data || {})}
+                    `
+                }]
+            }]
+        };
+
+        const res = await fetch(
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-latest:generateContent?key=" + apiKey,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            }
+        );
+
+
+        const json = await res.json();
+        const reply = json.candidates?.[0]?.content?.parts?.[0]?.text || `I couldn't process your request.`;
+
+        const typingDiv = document.querySelector(".ai-response.typing");
+        if (typingDiv) typingDiv.remove();
+
+        const aiDiv = document.createElement("div");
+        aiDiv.className = "ai-response";
+        aiDiv.innerHTML = reply;
+        responseContainer.appendChild(aiDiv);
+        responseContainer.scrollTop = responseContainer.scrollHeight;
+    } catch (err) {
+        const typingDiv = document.querySelector(".ai-response.typing");
+        if (typingDiv) typingDiv.remove();
+        responseContainer.innerHTML += `<div class="ai-response error">Error: ${err.message}</div>`;
+        responseContainer.scrollTop = responseContainer.scrollHeight;
+    }
 }
 
-function clearChat(){
+function clearChat() {
     const responseContainer = document.getElementById("response-container");
     responseContainer.innerHTML = "";
 }
