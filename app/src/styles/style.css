@@ -1,11 +1,9 @@
-
 /*list of variables*/
 /*text input bg color: #151515*/
-:root{
---bg-color: #151515;
---border-color: #313131;
+:root {
+    --bg-color: #151515;
+    --border-color: #313131;
 }
-
 
 * {
     padding: 0;
@@ -28,7 +26,20 @@ a {
     color: inherit;
 }
 
-button{
+.theme-btn{
+    border: none;
+    padding: 0px;
+}
+.invert {
+    filter: invert(1) hue-rotate(180deg);
+}
+
+/* Elements that should remain same in both themes */
+.same.invert {
+    filter: invert(1) hue-rotate(180deg);
+}
+
+button {
     cursor: pointer;
     padding: 7px 15px;
     border-radius: 3px;
@@ -94,7 +105,7 @@ main {
     background-color: #fff;
 }
 
-#loader{
+#loader {
     position: absolute;
     top: 0;
     left: 0;
@@ -108,6 +119,7 @@ main {
     justify-content: center;
     align-items: center;
 }
+
 #loader.visible {
     opacity: 1;
     visibility: visible;
@@ -193,6 +205,7 @@ main {
     background-color: #1a1a1a;
 
 }
+
 #response-container .ai-response {
     align-self: flex-start;
     background-color: #0f0f0f;
@@ -266,6 +279,7 @@ input:-webkit-autofill {
     background-color: var(--bg-color) !important;
     -webkit-text-fill-color: #fff !important;
 }
+
 input:-internal-autofill-selected {
     background-color: var(--bg-color) !important;
     -webkit-text-fill-color: #fff !important;
@@ -414,6 +428,7 @@ tr:hover {
     background: rgb(25, 21, 0);
     color: rgb(255, 214, 0);
 }
+
 tr:hover .copy-btn {
     display: inline-block;
 }

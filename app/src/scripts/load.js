@@ -68,3 +68,11 @@ if ("serviceWorker" in navigator) {
             .catch(err => console.log("❌ Service Worker registration failed:", err));
     });
 }
+
+document.getElementById("themeToggle").addEventListener("click", () => {
+    document.documentElement.classList.toggle("invert");
+
+    document.querySelectorAll(".same").forEach(el => {
+        el.classList.toggle("invert");
+    });
+});
