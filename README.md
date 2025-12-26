@@ -20,6 +20,10 @@
 
 OpenDots is an open-source, integrated IoT data visualization and insight platform that helps users turn raw sensor data into meaningful, real-time visuals and AI-powered insights. It is designed to be hardware-agnostic, data-first, and easy to extend for contributors.
 
+## Preview
+
+<img width="1919" height="969" alt="image" src="https://github.com/user-attachments/assets/77f0d34c-04a9-423d-a08f-dfeec7afa105" />
+
 ## Overview
 
 OpenDots allows users to collect, visualize, and analyze live data from multiple IoT sources in one unified platform. Instead of building separate systems for data ingestion, dashboards, and analysis, OpenDots combines everything into a single workflow.
@@ -58,6 +62,49 @@ Users can create highly customizable dashboards, publish sharable project sites,
 - Research data visualization  
 - Smart systems dashboards  
 - Social-impact and open-data projects
+
+
+
+### Star History
+
+<picture>
+  <source
+    media="(prefers-color-scheme: dark)"
+    srcset="
+      https://api.star-history.com/svg?repos=multiverseweb/OpenDots&type=Date&theme=dark
+    "
+  />
+  
+  <source
+    media="(prefers-color-scheme: light)"
+    srcset="
+      https://api.star-history.com/svg?repos=multiverseweb/OpenDots&type=Date
+    "
+  />
+  <img
+    alt="Star History Chart"
+    src="https://api.star-history.com/svg?repos=multiverseweb/OpenDots&type=Date&theme=dark"
+  />
+</picture>
+
+---
+
+### Our Valuable Contributors ❤️
+
+[![Contributors](https://contrib.rocks/image?repo=multiverseweb/OpenDots)](https://github.com/multiverseweb/OpenDots/graphs/contributors)
+
+### Stargazers ⭐
+
+<div align='left'>
+
+[![Stargazers repo roster for @multiverseweb/OpenDots](https://reporoster.com/stars/dark/multiverseweb/OpenDots)](https://github.com/multiverseweb/OpenDots/stargazers)
+
+</div>
+
+### Forkers 🍴
+
+[![Forkers repo roster for @multiverseweb/OpenDots](https://reporoster.com/forks/dark/multiverseweb/OpenDots)](https://github.com/multiverseweb/OpenDots/network/members)
+
 
 ## Maintainer
 
