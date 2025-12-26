@@ -13,7 +13,7 @@
   ![GitHub last commit](https://img.shields.io/github/last-commit/multiverseweb/OpenDots)
   ![GitHub repo size](https://img.shields.io/github/repo-size/multiverseweb/OpenDots)
   ![GitHub total lines](https://sloc.xyz/github/multiverseweb/OpenDots)
-  <a href="https://multiverse-OpenDots.netlify.app/"><img alt="Website" src="https://img.shields.io/website?url=https%3A%2F%2Fmultiverseweb.github.io/OpenDots%2F&up_message=awake&up_color=%2300d18f&down_message=asleep&down_color=red&style=flat">
+  <a href="https://multiverseweb.github.io/OpenDots/"><img alt="Website" src="https://img.shields.io/website?url=https%3A%2F%2Fmultiverseweb.github.io/OpenDots%2F&up_message=awake&up_color=%2300d18f&down_message=asleep&down_color=red&style=flat">
 </a>
 
 ---
