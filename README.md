@@ -1,4 +1,7 @@
 # OpenDots
+<img src="app/resrc/images/opendots.png" height=50px align=right>
+
+###### AI • IoT • Data Analytics Platform
 
 ![Visitors](https://api.visitorbadge.io/api/visitors?path=multiverseweb2%2OpenDots%20&countColor=%23263759&style=flat&initial=5767)
   ![License](https://img.shields.io/badge/License-MIT-4e3eb5)
