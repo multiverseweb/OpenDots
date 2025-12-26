@@ -1,5 +1,4 @@
-# OpenDots
-<img src="app/resrc/images/opendots.png" height=50px align=right>
+# OpenDots <img src="app/resrc/images/OpenDots.png" height=50px align=right>
 
 ###### AI • IoT • Data Analytics Platform
 
