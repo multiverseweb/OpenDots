@@ -1,7 +1,7 @@
 /*list of variables*/
 /*text input bg color: #151515*/
 :root {
-    --bg-color: #151515;
+    --bg-color: #101010;
     --border-color: #313131;
 }
 
@@ -26,10 +26,11 @@ a {
     color: inherit;
 }
 
-.theme-btn{
+.theme-btn {
     border: none;
     padding: 0px;
 }
+
 .invert {
     filter: invert(1) hue-rotate(180deg);
 }
@@ -50,7 +51,7 @@ button {
 }
 
 main {
-    padding-top: 50px;
+    padding-top: 47px;
 }
 
 .icon {
@@ -79,26 +80,35 @@ main {
 
 .headerIcons {
     display: flex;
-    gap: 10px;
+    gap: 5px;
     align-items: center;
 }
 
-.headerIcon {
-    height: 17px;
-    padding: 7px;
+header button {
+    padding: 5px;
+    position: relative;
+    height: 27px;
+    width: 27px;
     cursor: pointer;
     border-radius: 5px;
     cursor: pointer;
     border: 1px solid var(--border-color);
 }
 
+header button img {
+    width: 100%;
+    height: auto;
+}
+
 #burger {
     display: flex;
     flex-direction: column;
     gap: 5px;
-    padding: 9px 8px 4px 8px;
 }
 
+#infinity{
+    display: none;
+}
 #burger span {
     width: 15px;
     height: 0.1px;
@@ -127,7 +137,7 @@ main {
 
 .container {
     display: flex;
-    height: calc(100vh - 70px);
+    height: calc(100vh - 75px);
     width: 100vw;
     overflow: hidden;
 }
@@ -164,6 +174,7 @@ main {
 }
 
 #sendBtn {
+    padding: 3px 12px 1px 12px;
     position: absolute;
     bottom: 19px;
     right: 18px;
@@ -220,22 +231,29 @@ main {
 }
 
 .divider {
-    width: 2px;
+    width: 5px;
     cursor: col-resize;
-    background: #2e2e2e;
+    border: 1px solid #2e2e2e;
     transition: background 0.2s, box-shadow 0.2s;
 }
 
 .divider:hover {
-    background: #5a5a5a;
-    box-shadow: 0 0 0 1.5px #5a5a5a;
+    background: var(--border-color);
 }
 
-
+.divider-handle {
+    width: 3px;
+    height: 30px;
+    background-color: var(--border-color);
+    position: relative;
+    left: 1px;
+    top: calc(50% - 15px);
+    border-radius: 3px;
+}
 
 select {
     padding: 0 5px;
-    height: 40px;
+    height: 30px;
     border-radius: 2px;
     border: none;
     color: white;
@@ -257,7 +275,7 @@ option {
 input[type="text"] {
     width: calc(100% - 20px);
     flex: 1;
-    padding: 10px;
+    padding: 5px 10px;
     margin-top: 10px;
     border: none;
     color: white;
@@ -295,8 +313,15 @@ input:-moz-autofill {
     display: none;
     flex-direction: row;
     margin: 10px 0 10px auto;
-    padding: 10px 25px;
+    padding: 7px 25px;
     width: min-content;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+}
+
+#clearBtn {
+    padding: 7px 25px;
     border-radius: 5px;
     color: white;
     cursor: pointer;
@@ -465,7 +490,7 @@ tr:hover .copy-btn {
 .msg {
     visibility: hidden;
     margin-top: 5px;
-    z-index: 5;
+    z-index: 50;
     opacity: 0;
     padding: 5px;
     width: calc(100% - 12px);
@@ -482,9 +507,10 @@ footer {
     color: #777;
     font-size: 12px;
     line-height: 14px;
-    padding: 2px;
+    padding: 3px;
     display: flex;
     justify-content: space-between;
+    width: calc(100% - 6px);
 }
 
 /* Modal overlay */
@@ -566,12 +592,42 @@ footer {
 
     #msg-container {
         width: calc(100vw - 30px);
-        position: absolute;
+        position: fixed;
+        top: 60px;
         justify-content: center;
         align-items: center;
+        z-index: 200;
     }
 
     .msg {
         width: 100%;
+    }
+
+    .divider {
+        display: none;
+    }
+
+    footer {
+        position: fixed;
+        bottom: 0;
+        background-color: #000000;
+    }
+#infinity{
+    display: block;
+}
+
+    #ai {
+        display: none;
+        position: fixed;
+        top:65px;
+        height: calc(100vh - 130px);
+        background-color: #000000;
+        border: 1px solid var(--border-color);
+        width: calc(100vw - 50px);
+        z-index: 10;
+        left: 9px;
+    }
+    #response-container {
+        height: calc(100vh - 274px);
     }
 }

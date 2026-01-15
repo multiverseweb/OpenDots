@@ -1,4 +1,9 @@
+document.getElementById("year").innerText = new Date().getFullYear();
 
+function toggleAi() {
+    const infinity = document.getElementById("ai");
+    infinity.style.display = infinity.style.display === "block" ? "none" : "block";
+}
 async function loadComponents() {
     const elements = document.querySelectorAll("[data-include]");
 

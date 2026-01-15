@@ -11,17 +11,20 @@
 </head>
 
 <body>
-    <div class="header">
+    <header class="header">
         <div class="headerIcons">
-            <div class="headerIcon" id="burger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <img src="app/resrc/images/user.png" alt="user" class="headerIcon" id="user">
+            <button>
+                <div class="headerIcon" id="burger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </button>
+            <button><img src="app/resrc/images/user.png" alt="user" class="headerIcon" id="user"></button>
+            <button onclick="toggleAi()" id="infinity"><img src="app/resrc/images/infinity.png" alt="infinity" class="headerIcon"></button>
         </div>
         <a href="index.html"><img src="app/resrc/images/OpenDots.png" alt="OpenDots" class="icon">OpenDots</a>
-    </div>
+    </header>
     <main class="container">
         <div id="config">
             <h4>Configure</h4>
@@ -38,7 +41,9 @@
             <div id="msg-container">
             </div>
         </div>
-        <div class="divider" id="divider1"></div>
+        <div class="divider" id="divider1">
+            <div class="divider-handle"></div>
+        </div>
 
         <div id="dashboard">
             <div id="loader">
@@ -63,7 +68,9 @@
                 </div>
             </details>
         </div>
-        <div class="divider" id="divider2"></div>
+        <div class="divider" id="divider2">
+            <div class="divider-handle"></div>
+        </div>
         <div id="ai">
             <div id="ai-header">
                 <h4><img src="app/resrc/images/infinity.png" class="icon" alt="">Infinity AI</h4>
@@ -81,8 +88,7 @@
     </main>
     <footer>
         <p>v1.0.0 | <button id="themeToggle" class="theme-btn">🌓</button></p>
-        <p>&copy; 2025 Ojas Gupta & Tejas Gupta. | License: MIT | <a
-                href="https://github.com/multiverseweb/OpenDots">GitHub</a></p>
+        <p>&copy; 2025 - <span id="year">YEAR</span> Ojas Gupta & Tejas Gupta.
     </footer>
 
     <script type="module" src="https://cdn.jsdelivr.net/npm/ldrs/dist/auto/lineSpinner.js"></script>
