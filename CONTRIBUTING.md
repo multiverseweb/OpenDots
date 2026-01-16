@@ -5,8 +5,8 @@ Thank you for your interest in contributing to OpenDots. This document explains 
 ## Prerequisites
 
 - Git and GitHub
-- Node.js and npm
-- Basic knowledge of JavaScript, React, Node.js, or Python
+- Read about the project in [README.md](README.md)
+- Basic knowledge of JavaScript or Python
 
 ## Clone the Repository
 
@@ -46,22 +46,6 @@ feature-dashboard
 fix-websocket-bug
 ```
 
-## Install Dependencies
-
-### Backend
-```bash
-cd backend
-npm install
-npm start
-```
-
-### Frontend
-```bash
-cd frontend
-npm install
-npm start
-```
-
 ## Contribution Areas
 
 - Frontend UI and dashboard customization
@@ -95,10 +79,6 @@ git push origin DSCWoC-YourName
 - Feedback will be provided via GitHub comments
 - Requested changes should be addressed promptly
 
-## Code of Conduct
-
-Maintain a respectful and professional environment. Any form of harassment or misconduct is not acceptable.
-
 ## Support
 
-For questions or discussions, use GitHub Issues or Discussions.
+For questions or discussions, use GitHub [Issues](https://github.com/multiverseweb/OpenDots/issues) or [Discussions](https://github.com/multiverseweb/OpenDots/discussions/).
