@@ -1,0 +1,27 @@
+├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING.md
+├── LICENSE
+├── README.md
+├── app/
+│   ├── resrc/
+│   │   └── images/
+│   │       ├── OpenDots.png
+│   │       ├── copy.png
+│   │       ├── infinity.png
+│   │       ├── loading.gif
+│   │       ├── tick.png
+│   │       └── user.png
+│   └── src/
+│       ├── scripts/
+│       │   ├── load.js
+│       │   └── script.js
+│       └── styles/
+│           └── style.css
+├── docs/
+│   ├── structure.md
+│   └── structure.txt
+├── index.html
+├── manifest.json
+├── service-worker.js
+├── sitemap.xml
+└── test.py
