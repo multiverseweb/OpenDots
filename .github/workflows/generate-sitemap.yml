@@ -1,0 +1,38 @@
+name: Generate Sitemap
+
+on:
+  schedule:
+    - cron: "30 18 * * 5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate-sitemap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+
+      - name: Install Dependencies
+        run: pip install beautifulsoup4 requests lxml
+
+      - name: Generate Sitemap
+        run: python .github/scripts/update_sitemap.py
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit and Push Sitemap
+        run: |
+          git add sitemap.xml
+          git commit -m "chore: weekly sitemap update" || echo "No changes to commit"
+          git push
