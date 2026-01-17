@@ -298,7 +298,9 @@ function renderData(data) {
             labels = labels.slice(-n);
         }
 
-        renderChartsAndTable({ ...data, feeds, labels });
+        const slicedData = { ...data, feeds, labels };
+        renderChartsAndTable(slicedData);
+        renderAIOverview(slicedData);
     };
 
     document.querySelectorAll('input[name="slicer"]').forEach(radio => {
@@ -654,4 +656,72 @@ Data: ${JSON.stringify(data || {})}
 function clearChat() {
     const responseContainer = document.getElementById("response-container");
     responseContainer.innerHTML = "";
+}
+
+function computeAIStats(data) {
+    return data.fields.map(field => {
+        const values = data.feeds
+            .map(f => Number(f[field.key]))
+            .filter(v => Number.isFinite(v));
+
+        if (!values.length) {
+            return { label: field.label, avg: 0 };
+        }
+
+        const avg = values.reduce((a, b) => a + b, 0) / values.length;
+
+        return {
+            label: field.label,
+            avg: Number(avg.toFixed(2))
+        };
+    });
+}
+
+
+function renderAIOverview(data) {
+    const canvas = document.getElementById("aiOverviewChart");
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    const stats = computeAIStats(data);
+
+    if (window.aiChart) window.aiChart.destroy();
+
+    window.aiChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: stats.map(s => s.label),
+            datasets: [{
+                label: "Average Value",
+                data: stats.map(s => s.avg),
+                backgroundColor: "rgba(0, 255, 255, 0.6)",
+                borderColor: "rgba(0, 255, 255, 1)",
+                borderWidth: 1.5,
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: { color: "#ddd" }
+                },
+                tooltip: {
+                    backgroundColor: "#111",
+                    borderColor: "#00ffff",
+                    borderWidth: 1
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: "#aaa" },
+                    grid: { display: false }
+                },
+                y: {
+                    ticks: { color: "#aaa" },
+                    grid: { color: "rgba(255,255,255,0.05)" }
+                }
+            }
+        }
+    });
 }
