@@ -110,5 +110,4 @@ Users can create highly customizable dashboards, publish sharable project sites,
 
 ## Maintainer
 
-Tejas Gupta  
-https://www.tejasgupta.work
+[Tejas Gupta](https://www.tejasgupta.work)
