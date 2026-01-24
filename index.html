@@ -20,11 +20,27 @@
                     <span></span>
                 </div>
             </button>
-            <button><img src="app/resrc/images/user.png" alt="user" class="headerIcon" id="user"></button>
+            <button id="loginBtn">Login</button>
+            <button id="profileBtn" style="display:none"><img src="app/resrc/images/user.png" alt="user" class="headerIcon" id="userProfileImg"></button>
             <button onclick="toggleAi()" id="infinity"><img src="app/resrc/images/infinity.png" alt="infinity" class="headerIcon"></button>
         </div>
         <a href="https://opendots.gitbook.io/docs/"><img src="app/resrc/images/OpenDots.png" alt="OpenDots" class="icon">OpenDots</a>
     </header>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal-overlay" style="display:none;">
+      <div class="modal-content">
+        <h2>Sign in to OpenDots</h2>
+        <p>Choose a provider to continue</p>
+        <button class="oauth-btn google" id="googleLoginBtn">
+          <img src="https://img.icons8.com/color/32/000000/google-logo.png" alt="Google"> Sign in with Google
+        </button>
+        <button class="oauth-btn github" id="githubLoginBtn">
+          <img src="https://img.icons8.com/ios-glyphs/32/000000/github.png" alt="GitHub"> Sign in with GitHub
+        </button>
+        <button class="close-modal" id="closeLoginModal">Cancel</button>
+      </div>
+    </div>
     <main class="container">
         <div id="config">
             <h4>Configure</h4>
