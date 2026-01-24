@@ -20,11 +20,16 @@
                     <span></span>
                 </div>
             </button>
-            <button><img src="app/resrc/images/user.png" alt="user" class="headerIcon" id="user"></button>
-            <button onclick="toggleAi()" id="infinity"><img src="app/resrc/images/infinity.png" alt="infinity" class="headerIcon"></button>
+            <button onclick="openLoginModal()">
+                <img src="app/resrc/images/user.png" alt="user" class="headerIcon" id="user">
+            </button>
+            <button onclick="toggleAi()" id="infinity">
+                <img src="app/resrc/images/infinity.png" alt="infinity" class="headerIcon">
+            </button>
         </div>
         <a href="https://opendots.gitbook.io/docs/"><img src="app/resrc/images/OpenDots.png" alt="OpenDots" class="icon">OpenDots</a>
     </header>
+
     <main class="container">
         <div id="config">
             <h4>Configure</h4>
@@ -86,14 +91,113 @@
             </div>
         </div>
     </main>
+
     <footer>
         <p>v1.0.0 | <button id="themeToggle" class="theme-btn">🌓</button></p>
-        <p>&copy; 2025 - <span id="year">YEAR</span> Ojas Gupta & Tejas Gupta.
+        <p>&copy; 2025 - <span id="year">YEAR</span> Ojas Gupta & Tejas Gupta.</p>
     </footer>
+
+    <div id="loginModal" class="chart-modal">
+        <div class="chart-modal-content" style="max-width: 400px; padding: 20px; text-align: center; background: #101010; color: white; border: 1px solid #313131; border-radius: 10px;">
+            <span class="chart-modal-close" onclick="closeLoginModal()">&times;</span>
+            <h3>Sign In</h3>
+            <p style="margin-bottom: 20px; color: #ccc;">Select a provider to continue</p>
+            <button onclick="signIn('google')" style="width: 100%; margin-bottom: 10px; padding: 10px; border: 1px solid #313131; cursor: pointer; background: #000; color: #fff;">
+                Sign in with Google
+            </button>
+            <button onclick="signIn('github')" style="width: 100%; padding: 10px; border: 1px solid #313131; cursor: pointer; background: #000; color: #fff;">
+                Sign in with GitHub
+            </button>
+            <button id="logoutBtn" onclick="logOut()" style="width: 100%; margin-top: 10px; padding: 10px; background: #3b0000; border: none; color: white; cursor: pointer; display: none;">
+                Logout
+            </button>
+        </div>
+    </div>
 
     <script type="module" src="https://cdn.jsdelivr.net/npm/ldrs/dist/auto/lineSpinner.js"></script>
     <script src="app/src/scripts/script.js"></script>
     <script src="app/src/scripts/load.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import {
+            getAuth,
+            signInWithPopup,
+            GoogleAuthProvider,
+            GithubAuthProvider,
+            signOut,
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // TODO: Replace with your actual Firebase config
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        window.signIn = async (providerName) => {
+            let provider;
+            if (providerName === 'google') provider = new GoogleAuthProvider();
+            if (providerName === 'github') provider = new GithubAuthProvider();
+
+            try {
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+                console.log("User logged in:", user);
+                closeLoginModal();
+            } catch (error) {
+                console.error("Login failed:", error.message);
+                alert("Login failed: " + error.message);
+            }
+        };
+
+        window.logOut = async () => {
+            try {
+                await signOut(auth);
+                console.log("User logged out");
+                closeLoginModal();
+            } catch (error) {
+                console.error("Logout failed", error);
+            }
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            const userImg = document.getElementById("user");
+            const logoutBtn = document.getElementById("logoutBtn");
+
+            if (user) {
+                if (user.photoURL) {
+                    userImg.src = user.photoURL;
+                }
+
+                localStorage.setItem('user_uid', user.uid);
+                localStorage.setItem('user_name', user.displayName);
+
+                if (logoutBtn) logoutBtn.style.display = "block";
+            } else {
+                userImg.src = "app/resrc/images/user.png";
+                localStorage.removeItem('user_uid');
+                localStorage.removeItem('user_name');
+
+                if (logoutBtn) logoutBtn.style.display = "none";
+            }
+        });
+
+        window.openLoginModal = () => {
+            document.getElementById('loginModal').classList.add('active');
+        };
+
+        window.closeLoginModal = () => {
+            document.getElementById('loginModal').classList.remove('active');
+        };
+    </script>
 </body>
 
 </html>
