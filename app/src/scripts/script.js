@@ -215,6 +215,227 @@ function copyRowData(btn) {
     btn.innerHTML = `<img src="app/resrc/images/tick.png"">`;
     setTimeout(() => (btn.innerHTML = `<img src="app/resrc/images/copy.png">`), 1000);
 }
+
+// ========== DATA EXPORT FUNCTIONS ==========
+
+/**
+ * Generate filename with timestamp (format: prefix_YYYY-MM-DD.extension)
+ */
+function generateExportFilename(prefix, extension) {
+    const now = new Date();
+    const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
+    return `${prefix}_${dateStr}.${extension}`;
+}
+
+/**
+ * Export chart as PNG image
+ */
+async function exportChartAsPNG(chartElement, chartTitle) {
+    const exportBtn = chartElement.querySelector('.chart-export-btn');
+    const originalText = exportBtn ? exportBtn.textContent : '📷 Export';
+    
+    try {
+        // Check if required libraries are loaded
+        if (typeof html2canvas === 'undefined') {
+            throw new Error('html2canvas library not loaded');
+        }
+        if (typeof saveAs === 'undefined') {
+            throw new Error('FileSaver library not loaded');
+        }
+        
+        // Show loading state
+        if (exportBtn) {
+            exportBtn.textContent = '⏳...';
+            exportBtn.disabled = true;
+        }
+        
+        chartElement.style.opacity = '0.7';
+        chartElement.style.pointerEvents = 'none';
+        
+        const canvas = chartElement.querySelector('canvas');
+        if (!canvas) {
+            throw new Error('No chart canvas found');
+        }
+        
+        const canvasImage = await html2canvas(canvas, {
+            backgroundColor: '#ffffff',
+            scale: 2,
+            logging: false,
+            useCORS: true,
+            allowTaint: false,
+            foreignObjectRendering: false
+        });
+        
+        // Convert to blob and trigger download
+        canvasImage.toBlob((blob) => {
+            try {
+                if (!blob) {
+                    throw new Error('Failed to generate image blob');
+                }
+                const filename = generateExportFilename(`chart_${chartTitle.replace(/[^a-zA-Z0-9\s\-_]/g, '_').replace(/\s+/g, '_')}`, 'png');
+                saveAs(blob, filename);
+                showMessage(`Chart exported as ${filename} ✓`);
+            } catch (blobError) {
+                console.error('Blob download failed:', blobError);
+                showMessage('Failed to download chart: ' + blobError.message);
+            } finally {
+                // Restore button state after download
+                if (exportBtn) {
+                    exportBtn.textContent = originalText;
+                    exportBtn.disabled = false;
+                }
+                // Restore chart opacity
+                chartElement.style.opacity = '';
+                chartElement.style.pointerEvents = '';
+            }
+        });
+        
+    } catch (error) {
+        console.error('Chart export failed:', error);
+        showMessage('Failed to export chart: ' + error.message);
+        // Restore button state on error
+        if (exportBtn) {
+            exportBtn.textContent = originalText;
+            exportBtn.disabled = false;
+        }
+        chartElement.style.opacity = '';
+        chartElement.style.pointerEvents = '';
+    }
+}
+
+/**
+ * Export data as CSV file
+ */
+function exportDataAsCSV(data, filename) {
+    const exportBtn = document.querySelector('.data-export-btn');
+    const originalText = exportBtn ? exportBtn.textContent : '📊 Export Data ▼';
+    
+    try {
+        // Check if required libraries are loaded
+        if (typeof Papa === 'undefined') {
+            throw new Error('PapaParse library not loaded');
+        }
+        if (typeof saveAs === 'undefined') {
+            throw new Error('FileSaver library not loaded');
+        }
+        
+        // Show loading state
+        if (exportBtn) {
+            exportBtn.textContent = '⏳ Exporting...';
+            exportBtn.disabled = true;
+        }
+        
+        if (!data || !data.feeds || !data.fields) {
+            throw new Error('No data available for export');
+        }
+        
+        const csvData = [];
+        const headers = ['Time', ...data.fields.map(field => field.label)];
+        csvData.push(headers);
+        
+        data.feeds.forEach((feed, index) => {
+            const row = [data.labels[index] || ''];
+            data.fields.forEach(field => {
+                row.push(feed[field.key] || '');
+            });
+            csvData.push(row);
+        });
+        
+        const csvString = Papa.unparse(csvData);
+        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+        saveAs(blob, filename);
+        
+        showMessage(`Data exported as ${filename} ✓`);
+        
+    } catch (error) {
+        console.error('CSV export failed:', error);
+        showMessage('Failed to export CSV: ' + error.message);
+    } finally {
+        // Restore button state
+        if (exportBtn) {
+            exportBtn.textContent = originalText;
+            exportBtn.disabled = false;
+        }
+    }
+}
+
+/**
+ * Export data as JSON file
+ */
+function exportDataAsJSON(data, filename) {
+    const exportBtn = document.querySelector('.data-export-btn');
+    const originalText = exportBtn ? exportBtn.textContent : '📊 Export Data ▼';
+    
+    try {
+        // Check if required libraries are loaded
+        if (typeof saveAs === 'undefined') {
+            throw new Error('FileSaver library not loaded');
+        }
+        
+        // Show loading state
+        if (exportBtn) {
+            exportBtn.textContent = '⏳ Exporting...';
+            exportBtn.disabled = true;
+        }
+        
+        if (!data) {
+            throw new Error('No data available for export');
+        }
+        
+        const exportData = {
+            metadata: {
+                name: data.name || 'OpenDots Export',
+                description: data.desc || '',
+                created: data.created || '',
+                updated: data.updated || new Date().toISOString(),
+                exportedAt: new Date().toISOString(),
+                totalRecords: data.feeds ? data.feeds.length : 0
+            },
+            fields: data.fields || [],
+            data: data.feeds || [],
+            labels: data.labels || []
+        };
+        
+        const jsonString = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8;' });
+        saveAs(blob, filename);
+        
+        showMessage(`Data exported as ${filename} ✓`);
+        
+    } catch (error) {
+        console.error('JSON export failed:', error);
+        showMessage('Failed to export JSON: ' + error.message);
+    } finally {
+        // Restore button state
+        if (exportBtn) {
+            exportBtn.textContent = originalText;
+            exportBtn.disabled = false;
+        }
+    }
+}
+
+/**
+ * Toggle export dropdown visibility
+ */
+function toggleExportDropdown() {
+    const dropdown = document.getElementById('exportOptions');
+    if (dropdown) {
+        dropdown.classList.toggle('active');
+    }
+}
+
+// Close export dropdown when clicking elsewhere
+document.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('exportOptions');
+    const button = document.querySelector('.data-export-btn');
+    
+    if (dropdown && button && !button.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.remove('active');
+    }
+});
+
+// ========== END DATA EXPORT FUNCTIONS ==========
+
 // ---------- EVENT: Source Change ----------
 sourceSelect.addEventListener("change", () => {
     resetUI();
@@ -485,7 +706,15 @@ function renderChartsAndTable(data) {
     // ✅ Combined chart (All data together)
     const combinedBlock = document.createElement("div");
     combinedBlock.className = "chart-block";
-    combinedBlock.innerHTML = `<h3>All Data Overview</h3><canvas style="width:100%; height:auto;"></canvas>`;
+    combinedBlock.innerHTML = `
+        <div class="chart-header">
+            <h3>All Data Overview</h3>
+            <button class="export-btn chart-export-btn" onclick="exportChartAsPNG(this.closest('.chart-block'), 'All_Data_Overview')" title="Export chart as PNG" id="export-btn-combined">
+                📷 Export
+            </button>
+        </div>
+        <canvas style="width:100%; height:auto;"></canvas>
+    `;
     chartsContainer.appendChild(combinedBlock);
 
     const combinedCtx = combinedBlock.querySelector("canvas").getContext("2d");
@@ -561,7 +790,15 @@ function renderChartsAndTable(data) {
 
         const block = document.createElement("div");
         block.className = "chart-block";
-        block.innerHTML = `<h3>${field.label}</h3><canvas style="width:100%; height:auto;"></canvas>`;
+        block.innerHTML = `
+            <div class="chart-header">
+                <h3>${field.label}</h3>
+                <button class="export-btn chart-export-btn" onclick="exportChartAsPNG(this.closest('.chart-block'), '${field.label.replace(/'/g, "\\'")}')" title="Export chart as PNG" id="export-btn-${field.label.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()}">
+                    📷 Export
+                </button>
+            </div>
+            <canvas style="width:100%; height:auto;"></canvas>
+        `;
         chartsContainer.appendChild(block);
 
         const ctx = block.querySelector("canvas").getContext("2d");
@@ -659,12 +896,24 @@ function renderChartsAndTable(data) {
         })
         .join("");
 
-    // Render table
+    // Render export controls + table
     document.getElementById("tableContainer").innerHTML = `
-<table class="data-table">
-    <thead>${thead}</thead>
-    <tbody>${rows}</tbody>
-</table>`;
+    <div class="data-export-controls">
+        <div class="export-dropdown">
+            <button class="export-btn data-export-btn" onclick="toggleExportDropdown()">
+                📊 Export Data ▼
+            </button>
+            <div class="export-options" id="exportOptions">
+                <button onclick="exportDataAsCSV(data, generateExportFilename('data', 'csv'))">Export as CSV</button>
+                <button onclick="exportDataAsJSON(data, generateExportFilename('data', 'json'))">Export as JSON</button>
+            </div>
+        </div>
+    </div>
+    <table class="data-table">
+        <thead>${thead}</thead>
+        <tbody>${rows}</tbody>
+    </table>
+`;
 
     enableChartModal();
 }
