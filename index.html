@@ -58,6 +58,14 @@
 
             <div class="filter">
                 <div id="slicerGroup" class="slicer"></div>
+                <!-- Persistence Controls -->
+                <div id="persistenceControls" class="persistence-controls">
+                    <button id="saveDashBtn" onclick="saveDashboardState()" class="persist-btn">💾 Save</button>
+                    <button id="loadDashBtn" onclick="loadDashboardState()" class="persist-btn">📂 Load</button>
+                    <button id="clearDashBtn" onclick="clearDashboardState()" class="persist-btn">🗑️ Clear</button>
+                </div>
+                <!-- Status Indicator -->
+                <div id="persistenceStatus" class="status-indicator"></div>
             </div>
 
             <div id="chartsContainer"></div>
