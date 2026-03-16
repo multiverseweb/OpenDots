@@ -11,6 +11,146 @@ if (!sourceSelect || !loadBtn || !container) {
     showMessage("Error: Required UI elements are missing.");
 }
 
+// ========== INDEXEDDB PERSISTENCE (Solix Approach) ==========
+let dashboardDB = null;
+const DB_NAME = "OpenDotsDB";
+const DB_VERSION = 1;
+const STORE_NAME = "dashboards";
+const SYNC_QUEUE_STORE = "syncQueue";
+
+// Initialize IndexedDB
+async function initIndexedDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+            dashboardDB = request.result;
+            resolve(dashboardDB);
+        };
+        
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            
+            // Create dashboards store
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                const store = db.createObjectStore(STORE_NAME, { keyPath: "id", autoIncrement: true });
+                store.createIndex("timestamp", "timestamp", { unique: false });
+                store.createIndex("source", "source", { unique: false });
+            }
+            
+            // Create sync queue store
+            if (!db.objectStoreNames.contains(SYNC_QUEUE_STORE)) {
+                db.createObjectStore(SYNC_QUEUE_STORE, { keyPath: "id", autoIncrement: true });
+            }
+        };
+    });
+}
+
+// Save dashboard state to IndexedDB
+async function saveDashboardToIndexedDB(dashboardData) {
+    if (!dashboardDB) await initIndexedDB();
+    
+    return new Promise((resolve, reject) => {
+        const transaction = dashboardDB.transaction([STORE_NAME], "readwrite");
+        const store = transaction.objectStore(STORE_NAME);
+        
+        const dashboardObject = {
+            data: dashboardData.data,
+            chartConfigs: dashboardData.chartConfigs || [],
+            slicerValue: dashboardData.slicerValue || "all",
+            sourceSelection: {
+                source: dashboardData.source,
+                inputs: dashboardData.inputs
+            },
+            timestamp: new Date().getTime(),
+            status: "synced"
+        };
+        
+        const request = store.add(dashboardObject);
+        
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+            updateStatusIndicator("Saved ✓", "success");
+            resolve(request.result);
+        };
+    });
+}
+
+// Load latest dashboard from IndexedDB
+async function loadLatestDashboardFromIndexedDB() {
+    if (!dashboardDB) await initIndexedDB();
+    
+    return new Promise((resolve, reject) => {
+        const transaction = dashboardDB.transaction([STORE_NAME], "readonly");
+        const store = transaction.objectStore(STORE_NAME);
+        const index = store.index("timestamp");
+        
+        const request = index.openCursor(null, "prev"); // Get latest first
+        let latestDashboard = null;
+        
+        request.onerror = () => reject(request.error);
+        request.onsuccess = (event) => {
+            const cursor = event.target.result;
+            if (cursor) {
+                latestDashboard = cursor.value;
+                cursor.continue();
+            } else {
+                resolve(latestDashboard);
+            }
+        };
+    });
+}
+
+// Clear all dashboards from IndexedDB
+async function clearAllDashboards() {
+    if (!dashboardDB) await initIndexedDB();
+    
+    return new Promise((resolve, reject) => {
+        const transaction = dashboardDB.transaction([STORE_NAME], "readwrite");
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.clear();
+        
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+            updateStatusIndicator("Cleared ✓", "info");
+            resolve();
+        };
+    });
+}
+
+// Queue change for sync (when offline)
+async function queueSyncChange(changeData) {
+    if (!dashboardDB) await initIndexedDB();
+    
+    return new Promise((resolve, reject) => {
+        const transaction = dashboardDB.transaction([SYNC_QUEUE_STORE], "readwrite");
+        const store = transaction.objectStore(SYNC_QUEUE_STORE);
+        
+        const syncItem = {
+            type: changeData.type, // "fetch", "config_update", etc.
+            timestamp: new Date().getTime(),
+            data: changeData.data,
+            status: "pending"
+        };
+        
+        const request = store.add(syncItem);
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => resolve(request.result);
+    });
+}
+
+// Update status indicator UI
+function updateStatusIndicator(message, type = "info") {
+    const indicator = document.getElementById("persistenceStatus");
+    if (indicator) {
+        indicator.textContent = message;
+        indicator.className = `status-indicator status-${type}`;
+    }
+}
+
+// ========== END INDEXEDDB PERSISTENCE ==========
+
 // Input configurations
 const inputsConfig = {
     mqtt: [
@@ -75,6 +215,227 @@ function copyRowData(btn) {
     btn.innerHTML = `<img src="app/resrc/images/tick.png"">`;
     setTimeout(() => (btn.innerHTML = `<img src="app/resrc/images/copy.png">`), 1000);
 }
+
+// ========== DATA EXPORT FUNCTIONS ==========
+
+/**
+ * Generate filename with timestamp (format: prefix_YYYY-MM-DD.extension)
+ */
+function generateExportFilename(prefix, extension) {
+    const now = new Date();
+    const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
+    return `${prefix}_${dateStr}.${extension}`;
+}
+
+/**
+ * Export chart as PNG image
+ */
+async function exportChartAsPNG(chartElement, chartTitle) {
+    const exportBtn = chartElement.querySelector('.chart-export-btn');
+    const originalText = exportBtn ? exportBtn.textContent : '📷 Export';
+    
+    try {
+        // Check if required libraries are loaded
+        if (typeof html2canvas === 'undefined') {
+            throw new Error('html2canvas library not loaded');
+        }
+        if (typeof saveAs === 'undefined') {
+            throw new Error('FileSaver library not loaded');
+        }
+        
+        // Show loading state
+        if (exportBtn) {
+            exportBtn.textContent = '⏳...';
+            exportBtn.disabled = true;
+        }
+        
+        chartElement.style.opacity = '0.7';
+        chartElement.style.pointerEvents = 'none';
+        
+        const canvas = chartElement.querySelector('canvas');
+        if (!canvas) {
+            throw new Error('No chart canvas found');
+        }
+        
+        const canvasImage = await html2canvas(canvas, {
+            backgroundColor: '#ffffff',
+            scale: 2,
+            logging: false,
+            useCORS: true,
+            allowTaint: false,
+            foreignObjectRendering: false
+        });
+        
+        // Convert to blob and trigger download
+        canvasImage.toBlob((blob) => {
+            try {
+                if (!blob) {
+                    throw new Error('Failed to generate image blob');
+                }
+                const filename = generateExportFilename(`chart_${chartTitle.replace(/[^a-zA-Z0-9\s\-_]/g, '_').replace(/\s+/g, '_')}`, 'png');
+                saveAs(blob, filename);
+                showMessage(`Chart exported as ${filename} ✓`);
+            } catch (blobError) {
+                console.error('Blob download failed:', blobError);
+                showMessage('Failed to download chart: ' + blobError.message);
+            } finally {
+                // Restore button state after download
+                if (exportBtn) {
+                    exportBtn.textContent = originalText;
+                    exportBtn.disabled = false;
+                }
+                // Restore chart opacity
+                chartElement.style.opacity = '';
+                chartElement.style.pointerEvents = '';
+            }
+        });
+        
+    } catch (error) {
+        console.error('Chart export failed:', error);
+        showMessage('Failed to export chart: ' + error.message);
+        // Restore button state on error
+        if (exportBtn) {
+            exportBtn.textContent = originalText;
+            exportBtn.disabled = false;
+        }
+        chartElement.style.opacity = '';
+        chartElement.style.pointerEvents = '';
+    }
+}
+
+/**
+ * Export data as CSV file
+ */
+function exportDataAsCSV(data, filename) {
+    const exportBtn = document.querySelector('.data-export-btn');
+    const originalText = exportBtn ? exportBtn.textContent : '📊 Export Data ▼';
+    
+    try {
+        // Check if required libraries are loaded
+        if (typeof Papa === 'undefined') {
+            throw new Error('PapaParse library not loaded');
+        }
+        if (typeof saveAs === 'undefined') {
+            throw new Error('FileSaver library not loaded');
+        }
+        
+        // Show loading state
+        if (exportBtn) {
+            exportBtn.textContent = '⏳ Exporting...';
+            exportBtn.disabled = true;
+        }
+        
+        if (!data || !data.feeds || !data.fields) {
+            throw new Error('No data available for export');
+        }
+        
+        const csvData = [];
+        const headers = ['Time', ...data.fields.map(field => field.label)];
+        csvData.push(headers);
+        
+        data.feeds.forEach((feed, index) => {
+            const row = [data.labels[index] || ''];
+            data.fields.forEach(field => {
+                row.push(feed[field.key] || '');
+            });
+            csvData.push(row);
+        });
+        
+        const csvString = Papa.unparse(csvData);
+        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+        saveAs(blob, filename);
+        
+        showMessage(`Data exported as ${filename} ✓`);
+        
+    } catch (error) {
+        console.error('CSV export failed:', error);
+        showMessage('Failed to export CSV: ' + error.message);
+    } finally {
+        // Restore button state
+        if (exportBtn) {
+            exportBtn.textContent = originalText;
+            exportBtn.disabled = false;
+        }
+    }
+}
+
+/**
+ * Export data as JSON file
+ */
+function exportDataAsJSON(data, filename) {
+    const exportBtn = document.querySelector('.data-export-btn');
+    const originalText = exportBtn ? exportBtn.textContent : '📊 Export Data ▼';
+    
+    try {
+        // Check if required libraries are loaded
+        if (typeof saveAs === 'undefined') {
+            throw new Error('FileSaver library not loaded');
+        }
+        
+        // Show loading state
+        if (exportBtn) {
+            exportBtn.textContent = '⏳ Exporting...';
+            exportBtn.disabled = true;
+        }
+        
+        if (!data) {
+            throw new Error('No data available for export');
+        }
+        
+        const exportData = {
+            metadata: {
+                name: data.name || 'OpenDots Export',
+                description: data.desc || '',
+                created: data.created || '',
+                updated: data.updated || new Date().toISOString(),
+                exportedAt: new Date().toISOString(),
+                totalRecords: data.feeds ? data.feeds.length : 0
+            },
+            fields: data.fields || [],
+            data: data.feeds || [],
+            labels: data.labels || []
+        };
+        
+        const jsonString = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8;' });
+        saveAs(blob, filename);
+        
+        showMessage(`Data exported as ${filename} ✓`);
+        
+    } catch (error) {
+        console.error('JSON export failed:', error);
+        showMessage('Failed to export JSON: ' + error.message);
+    } finally {
+        // Restore button state
+        if (exportBtn) {
+            exportBtn.textContent = originalText;
+            exportBtn.disabled = false;
+        }
+    }
+}
+
+/**
+ * Toggle export dropdown visibility
+ */
+function toggleExportDropdown() {
+    const dropdown = document.getElementById('exportOptions');
+    if (dropdown) {
+        dropdown.classList.toggle('active');
+    }
+}
+
+// Close export dropdown when clicking elsewhere
+document.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('exportOptions');
+    const button = document.querySelector('.data-export-btn');
+    
+    if (dropdown && button && !button.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.remove('active');
+    }
+});
+
+// ========== END DATA EXPORT FUNCTIONS ==========
+
 // ---------- EVENT: Source Change ----------
 sourceSelect.addEventListener("change", () => {
     resetUI();
@@ -189,7 +550,26 @@ async function loadData() {
                             )
                             : null;
 
-        if (data) renderData(data);
+        if (data) {
+            renderData(data);
+            
+            // Save dashboard state to IndexedDB (Solix approach)
+            const inputValues = {};
+            for (const input of inputsConfig[source] || []) {
+                inputValues[input.id] = document.getElementById(input.id)?.value || "";
+            }
+            
+            await saveDashboardToIndexedDB({
+                data: data,
+                chartConfigs: charts.map(c => ({ type: c.config.type, data: c.data, options: c.options })),
+                slicerValue: document.querySelector('input[name="slicer"]:checked')?.value || "all",
+                source: source,
+                inputs: inputValues
+            });
+            
+            // Start background fetch for fresh data
+            backgroundFetchFreshData(source, inputValues);
+        }
     } catch (err) {
         resetUI();
         showMessage("Error: " + err.message);
@@ -326,7 +706,15 @@ function renderChartsAndTable(data) {
     // ✅ Combined chart (All data together)
     const combinedBlock = document.createElement("div");
     combinedBlock.className = "chart-block";
-    combinedBlock.innerHTML = `<h3>All Data Overview</h3><canvas style="width:100%; height:auto;"></canvas>`;
+    combinedBlock.innerHTML = `
+        <div class="chart-header">
+            <h3>All Data Overview</h3>
+            <button class="export-btn chart-export-btn" onclick="exportChartAsPNG(this.closest('.chart-block'), 'All_Data_Overview')" title="Export chart as PNG" id="export-btn-combined">
+                📷 Export
+            </button>
+        </div>
+        <canvas style="width:100%; height:auto;"></canvas>
+    `;
     chartsContainer.appendChild(combinedBlock);
 
     const combinedCtx = combinedBlock.querySelector("canvas").getContext("2d");
@@ -402,7 +790,15 @@ function renderChartsAndTable(data) {
 
         const block = document.createElement("div");
         block.className = "chart-block";
-        block.innerHTML = `<h3>${field.label}</h3><canvas style="width:100%; height:auto;"></canvas>`;
+        block.innerHTML = `
+            <div class="chart-header">
+                <h3>${field.label}</h3>
+                <button class="export-btn chart-export-btn" onclick="exportChartAsPNG(this.closest('.chart-block'), '${field.label.replace(/'/g, "\\'")}')" title="Export chart as PNG" id="export-btn-${field.label.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()}">
+                    📷 Export
+                </button>
+            </div>
+            <canvas style="width:100%; height:auto;"></canvas>
+        `;
         chartsContainer.appendChild(block);
 
         const ctx = block.querySelector("canvas").getContext("2d");
@@ -500,12 +896,24 @@ function renderChartsAndTable(data) {
         })
         .join("");
 
-    // Render table
+    // Render export controls + table
     document.getElementById("tableContainer").innerHTML = `
-<table class="data-table">
-    <thead>${thead}</thead>
-    <tbody>${rows}</tbody>
-</table>`;
+    <div class="data-export-controls">
+        <div class="export-dropdown">
+            <button class="export-btn data-export-btn" onclick="toggleExportDropdown()">
+                📊 Export Data ▼
+            </button>
+            <div class="export-options" id="exportOptions">
+                <button onclick="exportDataAsCSV(data, generateExportFilename('data', 'csv'))">Export as CSV</button>
+                <button onclick="exportDataAsJSON(data, generateExportFilename('data', 'json'))">Export as JSON</button>
+            </div>
+        </div>
+    </div>
+    <table class="data-table">
+        <thead>${thead}</thead>
+        <tbody>${rows}</tbody>
+    </table>
+`;
 
     enableChartModal();
 }
@@ -593,6 +1001,148 @@ function openChartModal(originalCanvas) {
         });
     }
 }
+
+// ========== PERSISTENCE CONTROL FUNCTIONS ==========
+
+// Background fetch for fresh data (Solix approach - updates cache)
+async function backgroundFetchFreshData(source, inputValues) {
+    // Fetch silently in background without showing loader
+    try {
+        updateStatusIndicator("Syncing...", "loading");
+        
+        let freshData = null;
+        if (source === "thingspeak") {
+            freshData = await fetchThingSpeak(inputValues.channelId);
+        } else if (source === "adafruit") {
+            freshData = await fetchAdafruit(inputValues.username, inputValues.key, inputValues.feed);
+        } else if (source === "blynk") {
+            freshData = await fetchBlynk(inputValues.auth, inputValues.pin);
+        } else if (source === "grafana") {
+            freshData = await fetchGrafana(inputValues.url, inputValues.token, inputValues.query);
+        }
+        
+        if (freshData && freshData !== data) {
+            // Data updated, save new version and re-render
+            data = freshData;
+            renderData(data); // Re-render charts and table with fresh data
+            await saveDashboardToIndexedDB({
+                data: data,
+                chartConfigs: charts.map(c => ({ type: c.config.type, data: c.data, options: c.options })),
+                slicerValue: document.querySelector('input[name="slicer"]:checked')?.value || "all",
+                source: source,
+                inputs: inputValues
+            });
+            updateStatusIndicator("Updated " + new Date().toLocaleTimeString(), "success");
+        } else {
+            updateStatusIndicator("Up to date ✓", "success");
+        }
+    } catch (err) {
+        console.log("Background sync failed (will retry later):", err);
+        // Queue this for later sync if offline
+        if (!navigator.onLine) {
+            await queueSyncChange({
+                type: "fresh_data_fetch",
+                data: { source, inputValues }
+            });
+            updateStatusIndicator("Offline - will sync later", "offline");
+        }
+    }
+}
+
+// Manually save current dashboard state
+async function saveDashboardState() {
+    if (!data) {
+        showMessage("No data to save. Fetch data first.");
+        return;
+    }
+    
+    try {
+        const source = document.getElementById("sourceSelect").value;
+        const inputValues = {};
+        for (const input of inputsConfig[source] || []) {
+            inputValues[input.id] = document.getElementById(input.id)?.value || "";
+        }
+        
+        await saveDashboardToIndexedDB({
+            data: data,
+            chartConfigs: charts.map(c => ({ type: c.config.type, data: c.data, options: c.options })),
+            slicerValue: document.querySelector('input[name="slicer"]:checked')?.value || "all",
+            source: source,
+            inputs: inputValues
+        });
+        
+        showMessage("Dashboard saved successfully! ✓");
+    } catch (err) {
+        showMessage("Error saving dashboard: " + err.message);
+    }
+}
+
+// Manually load latest saved dashboard
+async function loadDashboardState() {
+    try {
+        const savedDashboard = await loadLatestDashboardFromIndexedDB();
+        
+        if (!savedDashboard) {
+            showMessage("No saved dashboard found.");
+            return;
+        }
+        
+        // Check if data is recent
+        const age = new Date().getTime() - savedDashboard.timestamp;
+        const ageHours = Math.floor(age / (1000 * 60 * 60));
+        
+        if (ageHours > 24) {
+            const confirmLoad = confirm(`Saved data is ${ageHours} hours old. Load it anyway?`);
+            if (!confirmLoad) return;
+        }
+        
+        // Restore data
+        data = savedDashboard.data;
+        const source = savedDashboard.sourceSelection.source;
+        
+        // Set source and input values
+        document.getElementById("sourceSelect").value = source;
+        resetUI();
+        renderInputs();
+        
+        for (const [key, value] of Object.entries(savedDashboard.sourceSelection.inputs)) {
+            const input = document.getElementById(key);
+            if (input) input.value = value;
+        }
+        
+        // Render data and restore slicer
+        renderData(data);
+        const slicerRadio = document.querySelector(`input[name="slicer"][value="${savedDashboard.slicerValue}"]`);
+        if (slicerRadio) slicerRadio.checked = true;
+        
+        // Show when data was saved
+        const savedTime = new Date(savedDashboard.timestamp).toLocaleString();
+        updateStatusIndicator(`Loaded (${savedTime})`, "success");
+        showMessage(`Dashboard loaded from ${savedTime} ✓`);
+        
+        // Start background sync for fresh data
+        backgroundFetchFreshData(source, savedDashboard.sourceSelection.inputs);
+    } catch (err) {
+        showMessage("Error loading dashboard: " + err.message);
+    }
+}
+
+// Clear all saved dashboards
+async function clearDashboardState() {
+    const confirmed = confirm("Delete all saved dashboards? This cannot be undone.");
+    if (!confirmed) return;
+    
+    try {
+        await clearAllDashboards();
+        resetUI();
+        document.getElementById("sourceSelect").value = "DataSource";
+        showMessage("All saved dashboards cleared. ✓");
+    } catch (err) {
+        showMessage("Error clearing dashboards: " + err.message);
+    }
+}
+
+// ========== END PERSISTENCE CONTROL FUNCTIONS ==========
 
 async function ask() {
     const queryInput = document.getElementById("query");

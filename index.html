@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>OpenDots</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <!-- Export functionality libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
     <link rel="stylesheet" href="app/src/styles/style.css" />
     <link rel="shortcut icon" href="app/resrc/images/OpenDots.png" type="image/x-icon">
 </head>
@@ -58,6 +62,14 @@
 
             <div class="filter">
                 <div id="slicerGroup" class="slicer"></div>
+                <!-- Persistence Controls -->
+                <div id="persistenceControls" class="persistence-controls">
+                    <button id="saveDashBtn" onclick="saveDashboardState()" class="persist-btn">💾 Save</button>
+                    <button id="loadDashBtn" onclick="loadDashboardState()" class="persist-btn">📂 Load</button>
+                    <button id="clearDashBtn" onclick="clearDashboardState()" class="persist-btn">🗑️ Clear</button>
+                </div>
+                <!-- Status Indicator -->
+                <div id="persistenceStatus" class="status-indicator"></div>
             </div>
 
             <div id="chartsContainer"></div>
