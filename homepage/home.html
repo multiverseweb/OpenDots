@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenDots - Transform IoT Data Into Intelligence</title>
+    <link rel="shortcut icon" href="app/resrc/images/OpenDots.png" type="image/x-icon">
+    <link rel="stylesheet" href="Home style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+        <div class="grid-overlay"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <div class="logo-wrapper">
+                    <div class="logo-glow"></div>
+                </div>
+                <span class="logo-text">OpenDots</span>
+                <span class="logo-badge">v1.0</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#tech" class="nav-link">Technology</a>
+                <a href="#use-cases" class="nav-link">Use Cases</a>
+                <a href="#faq" class="nav-link">FAQ</a>
+                <a href="https://opendots.gitbook.io/docs/" target="_blank" class="nav-link">Docs</a>
+                <button class="dark-mode-toggle" id="darkModeToggle" aria-label="Toggle dark mode">
+                    <span class="toggle-icon sun-icon">☀️</span>
+                    <span class="toggle-icon moon-icon">🌙</span>
+                </button>
+                <a href="https://github.com/multiverseweb/OpenDots" target="_blank" class="btn-github">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    <span>GitHub</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge-wrapper">
+                    <div class="pulse-ring"></div>
+                    <div class="hero-badge">
+                        <span class="badge-icon">⚡</span>
+                        <span>Open Source • Real-Time • AI-Powered</span>
+                    </div>
+                </div>
+                
+                <h1 class="hero-title">
+                    <span class="title-line">Transform Your</span>
+                    <span class="title-highlight">IoT Data</span>
+                    <span class="title-line">Into Intelligence</span>
+                </h1>
+                
+                <p class="hero-description" id="heroTyping"></p>
+                
+                <div class="hero-buttons">
+                    <a href="../index.html" class="btn btn-primary">
+                        <span class="btn-text">Launch Platform</span>
+                        <span class="btn-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </span>
+                    </a>
+                    <a href="https://opendots.gitbook.io/docs/" target="_blank" class="btn btn-secondary">
+                        <span class="btn-text">Documentation</span>
+                    </a>
+                </div>
+                
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-icon">🚀</div>
+                        <div class="stat-content">
+                            <div class="stat-number">100%</div>
+                            <div class="stat-label">Open Source</div>
+                        </div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <div class="stat-icon">⚡</div>
+                        <div class="stat-content">
+                            <div class="stat-number">Real-Time</div>
+                            <div class="stat-label">Data Streaming</div>
+                        </div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <div class="stat-icon">🤖</div>
+                        <div class="stat-content">
+                            <div class="stat-number">AI-Powered</div>
+                            <div class="stat-label">Insights</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hero-visual">
+                <div class="visual-wrapper">
+                    <div class="floating-card card-1">
+                        <div class="card-glow"></div>
+                        <div class="card-content">
+                            <div class="card-header">
+                                <span class="card-title">Live Dashboard</span>
+                                <div class="status-dot"></div>
+                            </div>
+                            <div class="mini-chart">
+                                <div class="chart-line"></div>
+                            </div>
+                            <div class="card-footer">
+                                <span class="metric">24°C</span>
+                                <span class="metric">65%</span>
+                                <span class="metric">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="floating-card card-2">
+                        <div class="card-glow"></div>
+                        <div class="card-content">
+                            <div class="code-preview">
+                                <div class="code-line"><span class="code-keyword">const</span> data = sensors.read();</div>
+                                <div class="code-line"><span class="code-keyword">if</span> (data.temp > <span class="code-number">25</span>) {</div>
+                                <div class="code-line">  alert.send(<span class="code-string">"High temp"</span>);</div>
+                                <div class="code-line">}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="floating-card card-3">
+                        <div class="card-glow"></div>
+                        <div class="card-content">
+                            <div class="ai-indicator">
+                                <div class="ai-pulse"></div>
+                                <span>AI Analyzing...</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="geometric-shape shape-1"></div>
+                    <div class="geometric-shape shape-2"></div>
+                    <div class="geometric-shape shape-3"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Preview Section -->
+    <section class="preview-section" id="preview">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-tag">Preview</span>
+                <h2 class="section-title">
+                    See OpenDots <span class="title-gradient">In Action</span>
+                </h2>
+                <p class="section-description">
+                    Real-time air quality monitoring with AI-powered insights — powered by OpenDots
+                </p>
+            </div>
+            <div class="preview-wrapper">
+                <div class="preview-browser">
+                    <div class="browser-bar">
+                        <div class="browser-dots">
+                            <span class="browser-dot dot-red"></span>
+                            <span class="browser-dot dot-yellow"></span>
+                            <span class="browser-dot dot-green"></span>
+                        </div>
+                        <div class="browser-url">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            <span>multiverseweb.github.io/OpenDots</span>
+                        </div>
+                        <div class="browser-actions">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                        </div>
+                    </div>
+                    <div class="preview-screen">
+                        <img src="OPENDOT.jpg" alt="OpenDots Dashboard - Air Quality Monitoring with AI Insights" class="preview-screenshot" />
+                        <div class="preview-overlay">
+                            <a href="../../index.html" class="preview-cta-btn">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                Launch Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="preview-badges">
+                    <div class="preview-badge">
+                        <span class="pbadge-icon">📡</span>
+                        <div>
+                            <div class="pbadge-title">Live Data</div>
+                            <div class="pbadge-sub">WebSocket streaming</div>
+                        </div>
+                    </div>
+                    <div class="preview-badge">
+                        <span class="pbadge-icon">🤖</span>
+                        <div>
+                            <div class="pbadge-title">Infinity AI</div>
+                            <div class="pbadge-sub">Chat-based insights</div>
+                        </div>
+                    </div>
+                    <div class="preview-badge">
+                        <span class="pbadge-icon">📊</span>
+                        <div>
+                            <div class="pbadge-title">Multi-sensor</div>
+                            <div class="pbadge-sub">6+ chart types</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-tag">Features</span>
+                <h2 class="section-title">
+                    <span class="title-gradient">Powerful Tools</span> for Your IoT Journey
+                </h2>
+                <p class="section-description">
+                    Everything you need to collect, visualize, and analyze IoT data in one unified platform
+                </p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card" data-index="1">
+                    <div class="feature-number">01</div>
+                    <div class="feature-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Customizable Dashboards</h3>
+                    <p class="feature-description">
+                        Build pixel-perfect dashboards with drag-and-drop widgets. Flexible layouts, 
+                        real-time updates, and beautiful visualizations.
+                    </p>
+                    <div class="feature-hover-effect"></div>
+                </div>
+                
+                <div class="feature-card" data-index="2">
+                    <div class="feature-number">02</div>
+                    <div class="feature-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Real-Time Streaming</h3>
+                    <p class="feature-description">
+                        WebSocket-powered live data streams. See sensor changes instantly with 
+                        zero latency and automatic reconnection.
+                    </p>
+                    <div class="feature-hover-effect"></div>
+                </div>
+                
+                <div class="feature-card" data-index="3">
+                    <div class="feature-number">03</div>
+                    <div class="feature-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">AI-Powered Insights</h3>
+                    <p class="feature-description">
+                        Ask questions in natural language. Get trends, anomalies, and predictions 
+                        powered by advanced AI models.
+                    </p>
+                    <div class="feature-hover-effect"></div>
+                </div>
+                
+                <div class="feature-card" data-index="4">
+                    <div class="feature-number">04</div>
+                    <div class="feature-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Platform Integration</h3>
+                    <p class="feature-description">
+                        Seamlessly connect with ThingSpeak, Adafruit IO, Blynk, Grafana, and 
+                        any MQTT broker. Works with your existing setup.
+                    </p>
+                    <div class="feature-hover-effect"></div>
+                </div>
+                
+                <div class="feature-card" data-index="5">
+                    <div class="feature-number">05</div>
+                    <div class="feature-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Share & Collaborate</h3>
+                    <p class="feature-description">
+                        Create public project pages. Perfect for academic research, student projects, 
+                        and community monitoring initiatives.
+                    </p>
+                    <div class="feature-hover-effect"></div>
+                </div>
+                
+                <div class="feature-card" data-index="6">
+                    <div class="feature-number">06</div>
+                    <div class="feature-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                            <circle cx="12" cy="13" r="4"></circle>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Camera Support</h3>
+                    <p class="feature-description">
+                        Integrate live video feeds alongside sensor data. Monitor visual and 
+                        numerical data in perfect synchronization.
+                    </p>
+                    <div class="feature-hover-effect"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Use Cases -->
+    <section class="use-cases" id="use-cases">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-tag">Use Cases</span>
+                <h2 class="section-title">
+                    Real-World <span class="title-gradient">Applications</span>
+                </h2>
+            </div>
+            
+            <div class="use-cases-grid">
+                <div class="use-case-card">
+                    <div class="use-case-icon">🎓</div>
+                    <h3 class="use-case-title">Academic Projects</h3>
+                    <p class="use-case-description">
+                        Student and research projects with easy data sharing and professional visualization
+                    </p>
+                </div>
+                
+                <div class="use-case-card">
+                    <div class="use-case-icon">🌱</div>
+                    <h3 class="use-case-title">Environmental Monitoring</h3>
+                    <p class="use-case-description">
+                        Track air quality, weather patterns, and environmental data for communities
+                    </p>
+                </div>
+                
+                <div class="use-case-card">
+                    <div class="use-case-icon">🔬</div>
+                    <h3 class="use-case-title">Research Data</h3>
+                    <p class="use-case-description">
+                        Real-time monitoring and analysis for scientific experiments and studies
+                    </p>
+                </div>
+                
+                <div class="use-case-card">
+                    <div class="use-case-icon">🏠</div>
+                    <h3 class="use-case-title">Smart Systems</h3>
+                    <p class="use-case-description">
+                        Home automation, energy monitoring, and industrial IoT dashboards
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section" id="faq">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-tag">FAQ</span>
+                <h2 class="section-title">
+                    Frequently Asked <span class="title-gradient">Questions</span>
+                </h2>
+                <p class="section-description">
+                    Everything you need to know about OpenDots
+                </p>
+            </div>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        <span>What is OpenDots?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>OpenDots is an open-source, integrated IoT data visualization and insight platform. It helps users turn raw sensor data into meaningful, real-time visuals and AI-powered insights. It is hardware-agnostic, data-first, and easy to extend.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        <span>Which IoT platforms does OpenDots support?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>OpenDots integrates with ThingSpeak, Adafruit IO, Blynk, and Grafana out of the box. It also supports Arduino-based systems, MQTT brokers, and any platform that can send HTTP/WebSocket data.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        <span>Is OpenDots free to use?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes! OpenDots is 100% open-source under the MIT License. You can use it freely for personal, academic, and commercial projects. Contributions from the community are always welcome.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        <span>What is Infinity AI?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Infinity AI is OpenDots' built-in chat-based assistant. You can ask it natural-language questions about your sensor data — it provides trends, summaries, anomaly detection, and predictions based on your live data stream.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        <span>What tech stack does OpenDots use?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>The frontend is built with HTML, CSS, JavaScript, and React.js. The backend uses Node.js and Express.js with MongoDB for storage. Real-time communication is handled via WebSockets, and AI features are powered by Python and LLM integrations.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        <span>How can I contribute to OpenDots?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Head over to the <a href="https://github.com/multiverseweb/OpenDots" target="_blank">GitHub repository</a>, fork the project, and submit a pull request. You can also open issues for bugs or feature requests. All contributors are credited on the project page.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        <span>Does it support live camera feeds?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes! OpenDots supports live camera feed integration alongside sensor data, allowing you to monitor visual and numerical data in perfect synchronization on the same dashboard.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        <span>Can I deploy OpenDots on my own server?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Absolutely. OpenDots supports deployment on Vercel, Netlify, and standard cloud hosting. Check the documentation for step-by-step deployment guides including environment variable configuration and database setup.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-container">
+            <div class="cta-glow"></div>
+            <h2 class="cta-title">Ready to Transform Your Data?</h2>
+            <p class="cta-description">
+                Join developers and researchers building the future of IoT visualization
+            </p>
+            <div class="cta-buttons">
+                <a href="../index.html" class="btn btn-primary btn-large">
+                    <span class="btn-text">Launch OpenDots</span>
+                    <span class="btn-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </span>
+                </a>
+                <a href="https://github.com/multiverseweb/OpenDots" target="_blank" class="btn btn-secondary btn-large">
+                    <span class="btn-text">View on GitHub</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <span class="footer-logo-text">OpenDots</span>
+                    </div>
+                    <p class="footer-tagline">
+                        Open-source IoT data platform for the modern world
+                    </p>
+                    <div class="footer-social">
+                        <a href="https://github.com/multiverseweb/OpenDots" target="_blank" class="social-link">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <div class="footer-section">
+                        <h4 class="footer-heading">Platform</h4>
+                        <ul class="footer-list">
+                            <li><a href="../index.html">Dashboard</a></li>
+                            <li><a href="#features">Features</a></li>
+                            <li><a href="https://opendots.gitbook.io/docs/" target="_blank">Documentation</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h4 class="footer-heading">Community</h4>
+                        <ul class="footer-list">
+                            <li><a href="https://github.com/multiverseweb/OpenDots" target="_blank">GitHub</a></li>
+                            <li><a href="https://github.com/multiverseweb/OpenDots/issues" target="_blank">Issues</a></li>
+                            <li><a href="https://github.com/multiverseweb/OpenDots/pulls" target="_blank">Pull Requests</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h4 class="footer-heading">Resources</h4>
+                        <ul class="footer-list">
+                            <li><a href="https://github.com/multiverseweb/OpenDots#readme" target="_blank">README</a></li>
+                            <li><a href="https://opendots.gitbook.io/docs/" target="_blank">API Docs</a></li>
+                            <li><a href="https://github.com/multiverseweb/OpenDots/blob/main/LICENSE" target="_blank">License</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p class="footer-copyright">
+                    © 2025 OpenDots. Open source under MIT License. 
+                   
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="Home script.js"></script>
+    <script>
+    // Dark Mode Toggle
+    const toggle = document.getElementById('darkModeToggle');
+    const html = document.documentElement;
+    
+    // Load saved preference
+    if (localStorage.getItem('darkMode') === 'true') {
+        html.classList.add('dark');
+    }
+    
+    toggle.addEventListener('click', () => {
+        html.classList.toggle('dark');
+        localStorage.setItem('darkMode', html.classList.contains('dark'));
+    });
+
+    // FAQ Accordion
+    document.querySelectorAll('.faq-question').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const item = btn.closest('.faq-item');
+            const isOpen = item.classList.contains('open');
+            
+            // Close all
+            document.querySelectorAll('.faq-item').forEach(i => {
+                i.classList.remove('open');
+                i.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+            });
+            
+            // Open clicked if it was closed
+            if (!isOpen) {
+                item.classList.add('open');
+                btn.setAttribute('aria-expanded', 'true');
+            }
+        });
+    });
+    </script>
+    <script>
+    // ============================================
+    // TYPING ANIMATION — Hero Subtitle
+    // ============================================
+    (function() {
+        const el = document.getElementById('heroTyping');
+        if (!el) return;
+
+        const lines = [
+            "An integrated platform that unifies data collection, visualization, and AI-powered analysis for IoT projects.",
+            "Hardware-agnostic. Data-first. Built for the future."
+        ];
+
+        const CHAR_SPEED   = 28;   // ms per character
+        const LINE_PAUSE   = 500;  // ms pause between lines
+        const CURSOR_BLINK = 530;  // ms cursor blink interval
+        const START_DELAY  = 600;  // ms before typing begins
+
+        let cursorVisible = true;
+        const cursorEl = document.createElement('span');
+        cursorEl.className = 'typing-cursor';
+        cursorEl.textContent = '|';
+
+        // Blink cursor
+        const blinkInterval = setInterval(() => {
+            cursorVisible = !cursorVisible;
+            cursorEl.style.opacity = cursorVisible ? '1' : '0';
+        }, CURSOR_BLINK);
+
+        function typeLine(text, container, onDone) {
+            let i = 0;
+            const node = document.createTextNode('');
+            container.appendChild(node);
+
+            const interval = setInterval(() => {
+                node.textContent += text[i];
+                i++;
+                if (i >= text.length) {
+                    clearInterval(interval);
+                    onDone();
+                }
+            }, CHAR_SPEED);
+        }
+
+        function start() {
+            el.innerHTML = '';
+            el.appendChild(cursorEl);
+
+            // Line 1
+            const span1 = document.createElement('span');
+            el.insertBefore(span1, cursorEl);
+
+            typeLine(lines[0], span1, () => {
+                setTimeout(() => {
+                    // Line 2 — add a space then second line
+                    const br = document.createElement('br');
+                    el.insertBefore(br, cursorEl);
+                    const span2 = document.createElement('span');
+                    span2.style.opacity = '0.75';
+                    el.insertBefore(span2, cursorEl);
+
+                    typeLine(lines[1], span2, () => {
+                        // Done — stop blinking, fade cursor out
+                        setTimeout(() => {
+                            clearInterval(blinkInterval);
+                            cursorEl.style.transition = 'opacity 0.8s ease';
+                            cursorEl.style.opacity = '0';
+                            setTimeout(() => cursorEl.remove(), 900);
+                        }, 1200);
+                    });
+                }, LINE_PAUSE);
+            });
+        }
+
+        setTimeout(start, START_DELAY);
+    })();
+    </script>
+</body>
+
+</html>
