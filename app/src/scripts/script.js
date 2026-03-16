@@ -1,3 +1,63 @@
+// --- Professional OAuth Modal Logic ---
+const googleLoginBtn = document.getElementById('googleLoginBtn');
+const githubLoginBtn = document.getElementById('githubLoginBtn');
+const profileBtn = document.getElementById('profileBtn');
+const userProfileImg = document.getElementById('userProfileImg');
+const loginBtn = document.getElementById('loginBtn');
+const loginModal = document.getElementById('loginModal');
+const closeLoginModal = document.getElementById('closeLoginModal');
+
+function showLoginModal() {
+    loginModal.style.display = 'flex';
+}
+function hideLoginModal() {
+    loginModal.style.display = 'none';
+}
+function showProfile(user) {
+    loginBtn.style.display = 'none';
+    profileBtn.style.display = 'inline-block';
+    if (user && user.photo) {
+        userProfileImg.src = user.photo;
+        userProfileImg.alt = user.displayName || 'User';
+    }
+}
+function showLoginButtonOnly() {
+    loginBtn.style.display = 'inline-block';
+    profileBtn.style.display = 'none';
+}
+
+async function fetchUserProfile() {
+    try {
+        const res = await fetch('http://localhost:4000/api/user', {
+            credentials: 'include',
+        });
+        if (res.ok) {
+            const user = await res.json();
+            showProfile(user);
+            window.opendotsUser = user;
+        } else {
+            showLoginButtonOnly();
+        }
+    } catch (e) {
+        showLoginButtonOnly();
+    }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    fetchUserProfile();
+    loginBtn.onclick = showLoginModal;
+    closeLoginModal.onclick = hideLoginModal;
+    loginModal.onclick = (e) => { if (e.target === loginModal) hideLoginModal(); };
+    googleLoginBtn.onclick = () => {
+        window.location.href = 'http://localhost:4000/auth/google';
+    };
+    githubLoginBtn.onclick = () => {
+        window.location.href = 'http://localhost:4000/auth/github';
+    };
+    profileBtn.onclick = () => {
+        alert(window.opendotsUser ? `Logged in as ${window.opendotsUser.displayName}` : 'No user info');
+    };
+});
 Chart.defaults.interaction.mode = 'nearest';
 Chart.defaults.interaction.axis = 'x';
 Chart.defaults.interaction.intersect = false;

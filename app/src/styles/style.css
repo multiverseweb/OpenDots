@@ -1,3 +1,104 @@
+/* --- Enhanced Modal Styles --- */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(10, 10, 20, 0.82);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s;
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.modal-content {
+    background: linear-gradient(135deg, #181818 80%, #23234a 100%);
+    padding: 2.7rem 2.2rem 2.2rem 2.2rem;
+    border-radius: 18px;
+    box-shadow: 0 8px 40px #000c, 0 1.5px 0 #2e2e2e;
+    min-width: 340px;
+    max-width: 95vw;
+    text-align: center;
+    position: relative;
+    border: 1.5px solid #23234a;
+    animation: modalPop 0.25s cubic-bezier(.68,-0.55,.27,1.55);
+}
+@keyframes modalPop {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+.modal-content h2 {
+    margin-bottom: 0.5em;
+    color: #fff;
+    font-size: 2em;
+    letter-spacing: 0.5px;
+}
+.modal-content p {
+    color: #bdbdbd;
+    margin-bottom: 1.7em;
+    font-size: 1.08em;
+}
+.oauth-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 1.1em;
+    padding: 0.85em 1.2em;
+    font-size: 1.13em;
+    border: none;
+    border-radius: 8px;
+    background: #23272f;
+    color: #fff;
+    font-weight: 500;
+    box-shadow: 0 1.5px 0 #23234a;
+    transition: background 0.18s, box-shadow 0.18s, transform 0.13s;
+    outline: none;
+}
+.oauth-btn img {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0.5px 2px #0002;
+}
+.oauth-btn.google {
+    background: #fff;
+    color: #222;
+    border: 1.5px solid #e0e0e0;
+    box-shadow: 0 2px 8px #0001;
+}
+.oauth-btn.google:hover {
+    background: #f5f5f5;
+    transform: translateY(-1px) scale(1.03);
+    box-shadow: 0 4px 16px #0002;
+}
+.oauth-btn.github {
+    background: #23272f;
+    color: #fff;
+    border: 1.5px solid #444;
+    box-shadow: 0 2px 8px #0002;
+}
+.oauth-btn.github:hover {
+    background: #444;
+    transform: translateY(-1px) scale(1.03);
+    box-shadow: 0 4px 16px #0003;
+}
+.close-modal {
+    margin-top: 0.7em;
+    background: none;
+    color: #aaa;
+    border: none;
+    font-size: 1.08em;
+    cursor: pointer;
+    transition: color 0.18s;
+}
+.close-modal:hover {
+    color: #fff;
+    text-decoration: underline;
+}
 /*list of variables*/
 /*text input bg color: #151515*/
 :root {
@@ -48,6 +149,18 @@ button {
     color: rgb(201, 201, 201);
     cursor: pointer;
     border: 1px solid var(--border-color);
+}
+#loginBtn {
+    padding: 7px 25px;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 90px;
+    text-align: center;
+    box-sizing: border-box;
 }
 
 main {
