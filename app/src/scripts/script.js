@@ -11,6 +11,146 @@ if (!sourceSelect || !loadBtn || !container) {
     showMessage("Error: Required UI elements are missing.");
 }
 
+// ========== INDEXEDDB PERSISTENCE (Solix Approach) ==========
+let dashboardDB = null;
+const DB_NAME = "OpenDotsDB";
+const DB_VERSION = 1;
+const STORE_NAME = "dashboards";
+const SYNC_QUEUE_STORE = "syncQueue";
+
+// Initialize IndexedDB
+async function initIndexedDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+            dashboardDB = request.result;
+            resolve(dashboardDB);
+        };
+        
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            
+            // Create dashboards store
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                const store = db.createObjectStore(STORE_NAME, { keyPath: "id", autoIncrement: true });
+                store.createIndex("timestamp", "timestamp", { unique: false });
+                store.createIndex("source", "source", { unique: false });
+            }
+            
+            // Create sync queue store
+            if (!db.objectStoreNames.contains(SYNC_QUEUE_STORE)) {
+                db.createObjectStore(SYNC_QUEUE_STORE, { keyPath: "id", autoIncrement: true });
+            }
+        };
+    });
+}
+
+// Save dashboard state to IndexedDB
+async function saveDashboardToIndexedDB(dashboardData) {
+    if (!dashboardDB) await initIndexedDB();
+    
+    return new Promise((resolve, reject) => {
+        const transaction = dashboardDB.transaction([STORE_NAME], "readwrite");
+        const store = transaction.objectStore(STORE_NAME);
+        
+        const dashboardObject = {
+            data: dashboardData.data,
+            chartConfigs: dashboardData.chartConfigs || [],
+            slicerValue: dashboardData.slicerValue || "all",
+            sourceSelection: {
+                source: dashboardData.source,
+                inputs: dashboardData.inputs
+            },
+            timestamp: new Date().getTime(),
+            status: "synced"
+        };
+        
+        const request = store.add(dashboardObject);
+        
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+            updateStatusIndicator("Saved ✓", "success");
+            resolve(request.result);
+        };
+    });
+}
+
+// Load latest dashboard from IndexedDB
+async function loadLatestDashboardFromIndexedDB() {
+    if (!dashboardDB) await initIndexedDB();
+    
+    return new Promise((resolve, reject) => {
+        const transaction = dashboardDB.transaction([STORE_NAME], "readonly");
+        const store = transaction.objectStore(STORE_NAME);
+        const index = store.index("timestamp");
+        
+        const request = index.openCursor(null, "prev"); // Get latest first
+        let latestDashboard = null;
+        
+        request.onerror = () => reject(request.error);
+        request.onsuccess = (event) => {
+            const cursor = event.target.result;
+            if (cursor) {
+                latestDashboard = cursor.value;
+                cursor.continue();
+            } else {
+                resolve(latestDashboard);
+            }
+        };
+    });
+}
+
+// Clear all dashboards from IndexedDB
+async function clearAllDashboards() {
+    if (!dashboardDB) await initIndexedDB();
+    
+    return new Promise((resolve, reject) => {
+        const transaction = dashboardDB.transaction([STORE_NAME], "readwrite");
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.clear();
+        
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+            updateStatusIndicator("Cleared ✓", "info");
+            resolve();
+        };
+    });
+}
+
+// Queue change for sync (when offline)
+async function queueSyncChange(changeData) {
+    if (!dashboardDB) await initIndexedDB();
+    
+    return new Promise((resolve, reject) => {
+        const transaction = dashboardDB.transaction([SYNC_QUEUE_STORE], "readwrite");
+        const store = transaction.objectStore(SYNC_QUEUE_STORE);
+        
+        const syncItem = {
+            type: changeData.type, // "fetch", "config_update", etc.
+            timestamp: new Date().getTime(),
+            data: changeData.data,
+            status: "pending"
+        };
+        
+        const request = store.add(syncItem);
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => resolve(request.result);
+    });
+}
+
+// Update status indicator UI
+function updateStatusIndicator(message, type = "info") {
+    const indicator = document.getElementById("persistenceStatus");
+    if (indicator) {
+        indicator.textContent = message;
+        indicator.className = `status-indicator status-${type}`;
+    }
+}
+
+// ========== END INDEXEDDB PERSISTENCE ==========
+
 // Input configurations
 const inputsConfig = {
     mqtt: [
@@ -189,7 +329,26 @@ async function loadData() {
                             )
                             : null;
 
-        if (data) renderData(data);
+        if (data) {
+            renderData(data);
+            
+            // Save dashboard state to IndexedDB (Solix approach)
+            const inputValues = {};
+            for (const input of inputsConfig[source] || []) {
+                inputValues[input.id] = document.getElementById(input.id)?.value || "";
+            }
+            
+            await saveDashboardToIndexedDB({
+                data: data,
+                chartConfigs: charts.map(c => ({ type: c.config.type, data: c.data, options: c.options })),
+                slicerValue: document.querySelector('input[name="slicer"]:checked')?.value || "all",
+                source: source,
+                inputs: inputValues
+            });
+            
+            // Start background fetch for fresh data
+            backgroundFetchFreshData(source, inputValues);
+        }
     } catch (err) {
         resetUI();
         showMessage("Error: " + err.message);
@@ -593,6 +752,148 @@ function openChartModal(originalCanvas) {
         });
     }
 }
+
+// ========== PERSISTENCE CONTROL FUNCTIONS ==========
+
+// Background fetch for fresh data (Solix approach - updates cache)
+async function backgroundFetchFreshData(source, inputValues) {
+    // Fetch silently in background without showing loader
+    try {
+        updateStatusIndicator("Syncing...", "loading");
+        
+        let freshData = null;
+        if (source === "thingspeak") {
+            freshData = await fetchThingSpeak(inputValues.channelId);
+        } else if (source === "adafruit") {
+            freshData = await fetchAdafruit(inputValues.username, inputValues.key, inputValues.feed);
+        } else if (source === "blynk") {
+            freshData = await fetchBlynk(inputValues.auth, inputValues.pin);
+        } else if (source === "grafana") {
+            freshData = await fetchGrafana(inputValues.url, inputValues.token, inputValues.query);
+        }
+        
+        if (freshData && freshData !== data) {
+            // Data updated, save new version and re-render
+            data = freshData;
+            renderData(data); // Re-render charts and table with fresh data
+            await saveDashboardToIndexedDB({
+                data: data,
+                chartConfigs: charts.map(c => ({ type: c.config.type, data: c.data, options: c.options })),
+                slicerValue: document.querySelector('input[name="slicer"]:checked')?.value || "all",
+                source: source,
+                inputs: inputValues
+            });
+            updateStatusIndicator("Updated " + new Date().toLocaleTimeString(), "success");
+        } else {
+            updateStatusIndicator("Up to date ✓", "success");
+        }
+    } catch (err) {
+        console.log("Background sync failed (will retry later):", err);
+        // Queue this for later sync if offline
+        if (!navigator.onLine) {
+            await queueSyncChange({
+                type: "fresh_data_fetch",
+                data: { source, inputValues }
+            });
+            updateStatusIndicator("Offline - will sync later", "offline");
+        }
+    }
+}
+
+// Manually save current dashboard state
+async function saveDashboardState() {
+    if (!data) {
+        showMessage("No data to save. Fetch data first.");
+        return;
+    }
+    
+    try {
+        const source = document.getElementById("sourceSelect").value;
+        const inputValues = {};
+        for (const input of inputsConfig[source] || []) {
+            inputValues[input.id] = document.getElementById(input.id)?.value || "";
+        }
+        
+        await saveDashboardToIndexedDB({
+            data: data,
+            chartConfigs: charts.map(c => ({ type: c.config.type, data: c.data, options: c.options })),
+            slicerValue: document.querySelector('input[name="slicer"]:checked')?.value || "all",
+            source: source,
+            inputs: inputValues
+        });
+        
+        showMessage("Dashboard saved successfully! ✓");
+    } catch (err) {
+        showMessage("Error saving dashboard: " + err.message);
+    }
+}
+
+// Manually load latest saved dashboard
+async function loadDashboardState() {
+    try {
+        const savedDashboard = await loadLatestDashboardFromIndexedDB();
+        
+        if (!savedDashboard) {
+            showMessage("No saved dashboard found.");
+            return;
+        }
+        
+        // Check if data is recent
+        const age = new Date().getTime() - savedDashboard.timestamp;
+        const ageHours = Math.floor(age / (1000 * 60 * 60));
+        
+        if (ageHours > 24) {
+            const confirmLoad = confirm(`Saved data is ${ageHours} hours old. Load it anyway?`);
+            if (!confirmLoad) return;
+        }
+        
+        // Restore data
+        data = savedDashboard.data;
+        const source = savedDashboard.sourceSelection.source;
+        
+        // Set source and input values
+        document.getElementById("sourceSelect").value = source;
+        resetUI();
+        renderInputs();
+        
+        for (const [key, value] of Object.entries(savedDashboard.sourceSelection.inputs)) {
+            const input = document.getElementById(key);
+            if (input) input.value = value;
+        }
+        
+        // Render data and restore slicer
+        renderData(data);
+        const slicerRadio = document.querySelector(`input[name="slicer"][value="${savedDashboard.slicerValue}"]`);
+        if (slicerRadio) slicerRadio.checked = true;
+        
+        // Show when data was saved
+        const savedTime = new Date(savedDashboard.timestamp).toLocaleString();
+        updateStatusIndicator(`Loaded (${savedTime})`, "success");
+        showMessage(`Dashboard loaded from ${savedTime} ✓`);
+        
+        // Start background sync for fresh data
+        backgroundFetchFreshData(source, savedDashboard.sourceSelection.inputs);
+    } catch (err) {
+        showMessage("Error loading dashboard: " + err.message);
+    }
+}
+
+// Clear all saved dashboards
+async function clearDashboardState() {
+    const confirmed = confirm("Delete all saved dashboards? This cannot be undone.");
+    if (!confirmed) return;
+    
+    try {
+        await clearAllDashboards();
+        resetUI();
+        document.getElementById("sourceSelect").value = "DataSource";
+        showMessage("All saved dashboards cleared. ✓");
+    } catch (err) {
+        showMessage("Error clearing dashboards: " + err.message);
+    }
+}
+
+// ========== END PERSISTENCE CONTROL FUNCTIONS ==========
 
 async function ask() {
     const queryInput = document.getElementById("query");
