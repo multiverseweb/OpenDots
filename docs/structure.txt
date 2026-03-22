@@ -24,5 +24,4 @@
 ├── index.html
 ├── manifest.json
 ├── service-worker.js
-├── sitemap.xml
-└── test.py
+└── sitemap.xml
