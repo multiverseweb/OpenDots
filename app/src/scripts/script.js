@@ -1,5 +1,5 @@
-Chart.defaults.interaction.mode = 'nearest';
-Chart.defaults.interaction.axis = 'x';
+Chart.defaults.interaction.mode = "nearest";
+Chart.defaults.interaction.axis = "x";
 Chart.defaults.interaction.intersect = false;
 Chart.defaults.plugins.tooltip.enabled = true;
 const sourceSelect = document.getElementById("sourceSelect");
@@ -8,136 +8,148 @@ const container = document.getElementById("dynamicInputs");
 const loader = document.getElementById("loader");
 
 if (!sourceSelect || !loadBtn || !container) {
-    showMessage("Error: Required UI elements are missing.");
+  showMessage("Error: Required UI elements are missing.");
 }
 
 // Input configurations
 const inputsConfig = {
-    mqtt: [
-        { id: "broker", placeholder: "MQTT Broker" },
-        { id: "port", placeholder: "Port" },
-        { id: "topic", placeholder: "Topic" }
-    ],
-    thingspeak: [{ id: "channelId", placeholder: "Channel ID e.g. 357142" }],
-    adafruit: [
-        { id: "username", placeholder: "Username" },
-        { id: "key", placeholder: "AIO Key" },
-        { id: "feed", placeholder: "Feed Name" }
-    ],
-    blynk: [
-        { id: "auth", placeholder: "Auth Token" },
-        { id: "pin", placeholder: "Virtual Pin (V0, V1...)" }
-    ],
-    grafana: [
-        { id: "url", placeholder: "Grafana API URL" },
-        { id: "token", placeholder: "API Token" },
-        { id: "query", placeholder: "Query/Metric Name" }
-    ]
+  mqtt: [
+    { id: "broker", placeholder: "MQTT Broker" },
+    { id: "port", placeholder: "Port" },
+    { id: "topic", placeholder: "Topic" },
+  ],
+  thingspeak: [{ id: "channelId", placeholder: "Channel ID e.g. 357142" }],
+  adafruit: [
+    { id: "username", placeholder: "Username" },
+    { id: "key", placeholder: "AIO Key" },
+    { id: "feed", placeholder: "Feed Name" },
+  ],
+  blynk: [
+    { id: "auth", placeholder: "Auth Token" },
+    { id: "pin", placeholder: "Virtual Pin (V0, V1...)" },
+  ],
+  grafana: [
+    { id: "url", placeholder: "Grafana API URL" },
+    { id: "token", placeholder: "API Token" },
+    { id: "query", placeholder: "Query/Metric Name" },
+  ],
 };
 
 function createDynamicSlicers(rowCount) {
-    const slicerGroup = document.getElementById("slicerGroup");
-    slicerGroup.innerHTML = ""; // clear old slicers
+  const slicerGroup = document.getElementById("slicerGroup");
+  slicerGroup.innerHTML = ""; // clear old slicers
 
-    const slicerValues = new Set(); // fixed slicer
-    // generate slicers dynamically based on row count
-    if (rowCount > 2) slicerValues.add(2);
-    if (rowCount > 10) slicerValues.add(10);
-    if (rowCount > 20) slicerValues.add(20);
-    if (rowCount > 50) slicerValues.add(50);
-    if (rowCount > 100) slicerValues.add(100);
+  const slicerValues = new Set(); // fixed slicer
+  // generate slicers dynamically based on row count
+  if (rowCount > 2) slicerValues.add(2);
+  if (rowCount > 10) slicerValues.add(10);
+  if (rowCount > 20) slicerValues.add(20);
+  if (rowCount > 50) slicerValues.add(50);
+  if (rowCount > 100) slicerValues.add(100);
 
-    // sort numerically for neat order
-    const sorted = [...slicerValues].sort((a, b) => a - b);
+  // sort numerically for neat order
+  const sorted = [...slicerValues].sort((a, b) => a - b);
 
-    // add slicer buttons
-    sorted.forEach(val => {
-        const id = `slicer${val}`;
-        slicerGroup.innerHTML += `
+  // add slicer buttons
+  sorted.forEach((val) => {
+    const id = `slicer${val}`;
+    slicerGroup.innerHTML += `
       <input type="radio" id="${id}" name="slicer" value="${val}">
       <label for="${id}">${val}</label>
     `;
-    });
+  });
 
-    // always add "All" slicer last and make it default
-    slicerGroup.innerHTML += `
+  // always add "All" slicer last and make it default
+  slicerGroup.innerHTML += `
     <input type="radio" id="slicerAll" name="slicer" value="all" checked>
     <label for="slicerAll">All</label>
   `;
-    slicerGroup.style.display = "flex";
+  slicerGroup.style.display = "flex";
 }
 
 // ✅ Copy Function
 function copyRowData(btn) {
-    const row = btn.closest("tr");
-    const json = row.getAttribute("data-json");
-    navigator.clipboard.writeText(json);
-    btn.innerHTML = `<img src="app/resrc/images/tick.png"">`;
-    setTimeout(() => (btn.innerHTML = `<img src="app/resrc/images/copy.png">`), 1000);
+  const row = btn.closest("tr");
+  const json = row.getAttribute("data-json");
+  navigator.clipboard.writeText(json);
+  btn.innerHTML = `<img src="app/resrc/images/tick.png"">`;
+  setTimeout(
+    () => (btn.innerHTML = `<img src="app/resrc/images/copy.png">`),
+    1000,
+  );
 }
 // ---------- EVENT: Source Change ----------
 sourceSelect.addEventListener("change", () => {
-    resetUI();
-    renderInputs();
+  resetUI();
+  renderInputs();
 });
 
 // ---------- FUNCTION: Render Inputs ----------
 function renderInputs() {
-    const source = sourceSelect.value;
-    container.innerHTML = "";
+  const source = sourceSelect.value;
+  container.innerHTML = "";
 
-    if (!source || !inputsConfig[source]) {
-        loadBtn.style.display = "none";
-        return;
-    }
+  if (!source || !inputsConfig[source]) {
+    loadBtn.style.display = "none";
+    return;
+  }
 
-    inputsConfig[source].forEach(inp => {
-        const inputEl = document.createElement("input");
-        inputEl.type = "text";
-        inputEl.id = inp.id;
-        inputEl.placeholder = inp.placeholder;
-        container.appendChild(inputEl);
-    });
+  inputsConfig[source].forEach((inp) => {
+    const inputEl = document.createElement("input");
+    inputEl.type = "text";
+    inputEl.id = inp.id;
+    inputEl.placeholder = inp.placeholder;
+    container.appendChild(inputEl);
+  });
 
-    loadBtn.style.display = "flex";
+  loadBtn.style.display = "flex";
 }
 
 // ---------- FUNCTION: Reset UI ----------
 function resetUI() {
-    const idsToClear = ["chName", "chDesc", "chCreated", "chUpdated", "chFields"];
-    idsToClear.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.textContent = "";
-    });
+  const idsToClear = ["chName", "chDesc", "chCreated", "chUpdated", "chFields"];
+  idsToClear.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = "";
+  });
 
-    const clearSections = ["details", "chartsContainer", "tableContainer", "logSection", "slicerGroup"];
-    clearSections.forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        if (id === "chartsContainer" || id === "tableContainer") el.innerHTML = "";
-        else el.style.display = "none";
-    });
+  const clearSections = [
+    "details",
+    "chartsContainer",
+    "tableContainer",
+    "logSection",
+    "slicerGroup",
+  ];
+  clearSections.forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (id === "chartsContainer" || id === "tableContainer") el.innerHTML = "";
+    else el.style.display = "none";
+  });
 }
 
-
 function escapeHtml(s) {
-    return s.replace(/[&<>"']/g, c => ({
+  return s.replace(
+    /[&<>"']/g,
+    (c) =>
+      ({
         "&": "&amp;",
         "<": "&lt;",
         ">": "&gt;",
         '"': "&quot;",
-        "'": "&#39;"
-    }[c]));
+        "'": "&#39;",
+      })[c],
+  );
 }
 
 const colors = [
-    "#fde725",
-    "#5ec962",
-    "#21918c",
-    "#3b528b",
-    "#f89540",
-    "#cc4778",
-    "#7e03a8",
+  "#fde725",
+  "#5ec962",
+  "#21918c",
+  "#3b528b",
+  "#f89540",
+  "#cc4778",
+  "#7e03a8",
 ];
 let charts = [];
 
@@ -146,350 +158,366 @@ let data = null; // 🌍 Global variable
 
 // ---------- DATA LOADER ----------
 async function loadData() {
-    loader.classList.add("visible");
-    const btn = loadBtn;
-    const originalHTML = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = `<l-line-spinner size="14" stroke="1" speed="1" color="white" style="vertical-align:middle; margin-right: 10px;"></l-line-spinner> Fetching...`;
-    const source = document.getElementById("sourceSelect").value;
+  loader.classList.add("visible");
+  const btn = loadBtn;
+  const originalHTML = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<l-line-spinner size="14" stroke="1" speed="1" color="white" style="vertical-align:middle; margin-right: 10px;"></l-line-spinner> Fetching...`;
+  const source = document.getElementById("sourceSelect").value;
 
-    // Validate required fields
-    for (const f of inputsConfig[source] || []) {
-        const val = document.getElementById(f.id)?.value.trim();
-        if (!val) {
-            btn.disabled = false;
-            btn.innerHTML = originalHTML;
-            loader.classList.remove("visible");
-            resetUI();
-            return showMessage(`Please enter a valid ${f.placeholder}.`);
-        }
+  // Validate required fields
+  for (const f of inputsConfig[source] || []) {
+    const val = document.getElementById(f.id)?.value.trim();
+    if (!val) {
+      btn.disabled = false;
+      btn.innerHTML = originalHTML;
+      loader.classList.remove("visible");
+      resetUI();
+      return showMessage(`Please enter a valid ${f.placeholder}.`);
     }
+  }
 
-    try {
-        // Assign to global variable here 👇
-        data =
-            source === "thingspeak"
-                ? await fetchThingSpeak(document.getElementById("channelId").value)
-                : source === "adafruit"
-                    ? await fetchAdafruit(
-                        document.getElementById("username").value,
-                        document.getElementById("key").value,
-                        document.getElementById("feed").value
-                    )
-                    : source === "blynk"
-                        ? await fetchBlynk(
-                            document.getElementById("auth").value,
-                            document.getElementById("pin").value
-                        )
-                        : source === "grafana"
-                            ? await fetchGrafana(
-                                document.getElementById("url").value,
-                                document.getElementById("token").value,
-                                document.getElementById("query").value
-                            )
-                            : null;
+  try {
+    // Assign to global variable here 👇
+    data =
+      source === "thingspeak"
+        ? await fetchThingSpeak(document.getElementById("channelId").value)
+        : source === "adafruit"
+          ? await fetchAdafruit(
+              document.getElementById("username").value,
+              document.getElementById("key").value,
+              document.getElementById("feed").value,
+            )
+          : source === "blynk"
+            ? await fetchBlynk(
+                document.getElementById("auth").value,
+                document.getElementById("pin").value,
+              )
+            : source === "grafana"
+              ? await fetchGrafana(
+                  document.getElementById("url").value,
+                  document.getElementById("token").value,
+                  document.getElementById("query").value,
+                )
+              : null;
 
-        if (data) renderData(data);
-    } catch (err) {
-        resetUI();
-        showMessage("Error: " + err.message);
-        loader.classList.remove("visible");
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = originalHTML;
-        loader.classList.remove("visible");
-    }
+    if (data) renderData(data);
+  } catch (err) {
+    resetUI();
+    showMessage("Error: " + err.message);
+    loader.classList.remove("visible");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalHTML;
+    loader.classList.remove("visible");
+  }
 }
-
 
 // ---------- FETCHERS ----------
 async function fetchThingSpeak(channelId) {
-    const res = await fetch(`https://api.thingspeak.com/channels/${channelId}/feeds.json`);
-    if (!res.ok) throw new Error("ThingSpeak fetch failed");
-    const json = await res.json();
+  const res = await fetch(
+    `https://api.thingspeak.com/channels/${channelId}/feeds.json`,
+  );
+  if (!res.ok) throw new Error("ThingSpeak fetch failed");
+  const json = await res.json();
 
-    const fields = [];
-    for (let i = 1; i <= 8; i++) {
-        const label = json.channel[`field${i}`];
-        if (label) fields.push({ key: `field${i}`, label });
-    }
+  const fields = [];
+  for (let i = 1; i <= 8; i++) {
+    const label = json.channel[`field${i}`];
+    if (label) fields.push({ key: `field${i}`, label });
+  }
 
-    return {
-        name: json.channel.name ?? "—",
-        desc: json.channel.description ?? "—",
-        created: json.channel.created_at ?? "—",
-        updated: json.channel.updated_at ?? "—",
-        labels: json.feeds.map(f => new Date(f.created_at).toLocaleString()),
-        fields,
-        feeds: json.feeds
-    };
+  return {
+    name: json.channel.name ?? "—",
+    desc: json.channel.description ?? "—",
+    created: json.channel.created_at ?? "—",
+    updated: json.channel.updated_at ?? "—",
+    labels: json.feeds.map((f) => new Date(f.created_at).toLocaleString()),
+    fields,
+    feeds: json.feeds,
+  };
 }
 
 async function fetchAdafruit(user, key, feed) {
-    const res = await fetch(`https://io.adafruit.com/api/v2/${user}/feeds/${feed}/data`, {
-        headers: { "X-AIO-Key": key }
-    });
-    if (!res.ok) throw new Error("Adafruit fetch failed");
-    const json = await res.json();
-    return {
-        name: feed,
-        desc: "",
-        created: "—",
-        updated: "—",
-        labels: json.map(f => new Date(f.created_at).toLocaleString()),
-        fields: [{ key: "value", label: feed }],
-        feeds: json.map(f => ({ value: f.value }))
-    };
+  const res = await fetch(
+    `https://io.adafruit.com/api/v2/${user}/feeds/${feed}/data`,
+    {
+      headers: { "X-AIO-Key": key },
+    },
+  );
+  if (!res.ok) throw new Error("Adafruit fetch failed");
+  const json = await res.json();
+  return {
+    name: feed,
+    desc: "",
+    created: "—",
+    updated: "—",
+    labels: json.map((f) => new Date(f.created_at).toLocaleString()),
+    fields: [{ key: "value", label: feed }],
+    feeds: json.map((f) => ({ value: f.value })),
+  };
 }
 
 async function fetchBlynk(auth, pin) {
-    const res = await fetch(`https://blynk.cloud/external/api/get?token=${auth}&${pin}`);
-    if (!res.ok) throw new Error("Blynk fetch failed");
-    const val = await res.text();
-    return {
-        name: `Pin ${pin}`,
-        desc: "",
-        created: "—",
-        updated: new Date().toLocaleString(),
-        labels: [new Date().toLocaleString()],
-        fields: [{ key: "value", label: `Pin ${pin}` }],
-        feeds: [{ value: val }]
-    };
+  const res = await fetch(
+    `https://blynk.cloud/external/api/get?token=${auth}&${pin}`,
+  );
+  if (!res.ok) throw new Error("Blynk fetch failed");
+  const val = await res.text();
+  return {
+    name: `Pin ${pin}`,
+    desc: "",
+    created: "—",
+    updated: new Date().toLocaleString(),
+    labels: [new Date().toLocaleString()],
+    fields: [{ key: "value", label: `Pin ${pin}` }],
+    feeds: [{ value: val }],
+  };
 }
 
 async function fetchGrafana(url, token, query) {
-    const res = await fetch(`${url}/api/ds/query`, {
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ queries: [{ expr: query, interval: "30s" }] })
-    });
-    if (!res.ok) throw new Error("Grafana fetch failed");
-    const json = await res.json();
-    const series = json.results?.A?.frames?.[0]?.data ?? {};
-    return {
-        name: query,
-        desc: "",
-        created: "—",
-        updated: new Date().toLocaleString(),
-        labels: series?.time?.map(t => new Date(t).toLocaleString()) ?? [],
-        fields: [{ key: "value", label: query }],
-        feeds: (series?.values ?? []).map(v => ({ value: v }))
-    };
+  const res = await fetch(`${url}/api/ds/query`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ queries: [{ expr: query, interval: "30s" }] }),
+  });
+  if (!res.ok) throw new Error("Grafana fetch failed");
+  const json = await res.json();
+  const series = json.results?.A?.frames?.[0]?.data ?? {};
+  return {
+    name: query,
+    desc: "",
+    created: "—",
+    updated: new Date().toLocaleString(),
+    labels: series?.time?.map((t) => new Date(t).toLocaleString()) ?? [],
+    fields: [{ key: "value", label: query }],
+    feeds: (series?.values ?? []).map((v) => ({ value: v })),
+  };
 }
 
 // ---------- RENDER ----------
 function renderData(data) {
-    console.log("Data loaded:", data);
-    createDynamicSlicers(data.feeds.length);
-    const getSlicerValue = () =>
-        document.querySelector('input[name="slicer"]:checked')?.value || "all";
+  createDynamicSlicers(data.feeds.length);
+  const getSlicerValue = () =>
+    document.querySelector('input[name="slicer"]:checked')?.value || "all";
 
-    const applySlicer = () => {
-        let count = getSlicerValue();
-        let feeds = data.feeds;
-        let labels = data.labels;
+  const applySlicer = () => {
+    let count = getSlicerValue();
+    let feeds = data.feeds;
+    let labels = data.labels;
 
-        if (count !== "all") {
-            const n = parseInt(count);
-            feeds = feeds.slice(-n);
-            labels = labels.slice(-n);
-        }
+    if (count !== "all") {
+      const n = parseInt(count);
+      feeds = feeds.slice(-n);
+      labels = labels.slice(-n);
+    }
 
-        renderChartsAndTable({ ...data, feeds, labels });
-    };
+    renderChartsAndTable({ ...data, feeds, labels });
+  };
 
-    document.querySelectorAll('input[name="slicer"]').forEach(radio => {
-        radio.onchange = applySlicer;
-    });
+  document.querySelectorAll('input[name="slicer"]').forEach((radio) => {
+    radio.onchange = applySlicer;
+  });
 
-    applySlicer();
+  applySlicer();
 }
 
 function renderChartsAndTable(data) {
-    // Details
-    document.getElementById("details").style.display = "block";
-    document.getElementById("chName").textContent = data.name;
-    document.getElementById("chDesc").textContent = data.desc;
-    document.getElementById("chCreated").textContent = data.created;
-    document.getElementById("chUpdated").textContent = data.updated;
-    document.getElementById("chFields").textContent = data.fields.map(f => f.label).join(", ");
+  // Details
+  document.getElementById("details").style.display = "block";
+  document.getElementById("chName").textContent = data.name;
+  document.getElementById("chDesc").textContent = data.desc;
+  document.getElementById("chCreated").textContent = data.created;
+  document.getElementById("chUpdated").textContent = data.updated;
+  document.getElementById("chFields").textContent = data.fields
+    .map((f) => f.label)
+    .join(", ");
 
-    // Reset old charts
-    const chartsContainer = document.getElementById("chartsContainer");
-    chartsContainer.innerHTML = "";
-    charts.forEach(c => c.destroy());
-    charts = [];
+  // Reset old charts
+  const chartsContainer = document.getElementById("chartsContainer");
+  chartsContainer.innerHTML = "";
+  charts.forEach((c) => c.destroy());
+  charts = [];
 
-    // ✅ Combined chart (All data together)
-    const combinedBlock = document.createElement("div");
-    combinedBlock.className = "chart-block";
-    combinedBlock.innerHTML = `<h3>All Data Overview</h3><canvas style="width:100%; height:auto;"></canvas>`;
-    chartsContainer.appendChild(combinedBlock);
+  // ✅ Combined chart (All data together)
+  const combinedBlock = document.createElement("div");
+  combinedBlock.className = "chart-block";
+  combinedBlock.innerHTML = `<h3>All Data Overview</h3><canvas style="width:100%; height:auto;"></canvas>`;
+  chartsContainer.appendChild(combinedBlock);
 
-    const combinedCtx = combinedBlock.querySelector("canvas").getContext("2d");
+  const combinedCtx = combinedBlock.querySelector("canvas").getContext("2d");
 
-    const datasets = data.fields.map((field, idx) => {
-        const color = colors[idx % colors.length];
-        const values = data.feeds.map(f => {
-            const v = f[field.key];
-            const n = Number(v);
-            return isFinite(n) ? n : null;
-        });
-        if (!values.some(v => v !== null)) return null;
-        return {
+  const datasets = data.fields
+    .map((field, idx) => {
+      const color = colors[idx % colors.length];
+      const values = data.feeds.map((f) => {
+        const v = f[field.key];
+        const n = Number(v);
+        return isFinite(n) ? n : null;
+      });
+      if (!values.some((v) => v !== null)) return null;
+      return {
+        label: field.label,
+        data: values,
+        borderColor: color,
+        borderWidth: 1,
+        fill: false,
+        tension: 0.2,
+        pointRadius: 0,
+        pointHoverRadius: 3,
+      };
+    })
+    .filter(Boolean);
+
+  const combinedChart = new Chart(combinedCtx, {
+    type: "line",
+    data: {
+      labels: data.labels,
+      datasets: datasets,
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      aspectRatio: 2.5, // allow it to shrink naturally
+      plugins: {
+        legend: {
+          display: true,
+          position: "top",
+          align: "start",
+        },
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: data.xLabel || "Timestamp",
+          },
+          ticks: {
+            maxRotation: 90,
+            minRotation: 90, // 🔥 forces exact vertical labels
+            autoSkip: true,
+          },
+          grid: { color: "#2c2c2cff" },
+        },
+        y: {
+          title: { display: true, text: "Values" },
+          grid: { color: "#2c2c2cff" },
+        },
+      },
+    },
+  });
+
+  charts.push(combinedChart);
+
+  // ✅ Individual charts
+  data.fields.forEach((field, idx) => {
+    const values = data.feeds.map((f) => {
+      const v = f[field.key];
+      const n = Number(v);
+      return isFinite(n) ? n : null;
+    });
+    if (!values.some((v) => v !== null)) return;
+
+    const block = document.createElement("div");
+    block.className = "chart-block";
+    block.innerHTML = `<h3>${field.label}</h3><canvas style="width:100%; height:auto;"></canvas>`;
+    chartsContainer.appendChild(block);
+
+    const ctx = block.querySelector("canvas").getContext("2d");
+    const color = colors[idx % colors.length];
+    const chart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: data.labels,
+        datasets: [
+          {
             label: field.label,
             data: values,
             borderColor: color,
             borderWidth: 1,
-            fill: false,
+            fill: true,
             tension: 0.2,
             pointRadius: 0,
-            pointHoverRadius: 3
-        };
-    }).filter(Boolean);
-
-    const combinedChart = new Chart(combinedCtx, {
-        type: "line",
-        data: {
-            labels: data.labels,
-            datasets: datasets
+            pointHoverRadius: 3,
+            backgroundColor: (ctx) => {
+              const { chartArea } = ctx.chart;
+              if (!chartArea) return null;
+              const gradient = ctx.chart.ctx.createLinearGradient(
+                0,
+                chartArea.top,
+                0,
+                chartArea.bottom,
+              );
+              gradient.addColorStop(0, color + "99");
+              gradient.addColorStop(1, color + "00");
+              return gradient;
+            },
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 2.5,
+        plugins: {
+          legend: {
+            display: true,
+            position: "top",
+            align: "start",
+          },
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            aspectRatio: 2.5, // allow it to shrink naturally
-            plugins: {
-                legend: {
-                    display: true,
-                    position: "top",
-                    align: "start"
-                }
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: data.xLabel || "Timestamp",
             },
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: data.xLabel || "Timestamp"
-                    },
-                    ticks: {
-                        maxRotation: 90,
-                        minRotation: 90, // 🔥 forces exact vertical labels
-                        autoSkip: true
-                    },
-                    grid: { color: "#2c2c2cff" }
-                },
-                y: {
-                    title: { display: true, text: "Values" },
-                    grid: { color: "#2c2c2cff" }
-                }
-            }
-        }
+            ticks: {
+              maxRotation: 90,
+              minRotation: 90, // 🔥 exactly vertical timestamps
+              autoSkip: true,
+            },
+            grid: { color: "#2c2c2cff" },
+          },
+          y: {
+            title: { display: true, text: field.label },
+            grid: { color: "#2c2c2cff" },
+          },
+        },
+      },
     });
 
-    charts.push(combinedChart);
+    charts.push(chart);
+  });
 
-    // ✅ Individual charts
-    data.fields.forEach((field, idx) => {
-        const values = data.feeds.map(f => {
-            const v = f[field.key];
-            const n = Number(v);
-            return isFinite(n) ? n : null;
-        });
-        if (!values.some(v => v !== null)) return;
+  // ✅ Table with Serial No + Hover Copy Button
+  document.getElementById("logSection").style.display = "block";
 
-        const block = document.createElement("div");
-        block.className = "chart-block";
-        block.innerHTML = `<h3>${field.label}</h3><canvas style="width:100%; height:auto;"></canvas>`;
-        chartsContainer.appendChild(block);
+  // Table Head
+  let thead = `<tr><th>#</th><th>Time</th>${data.fields.map((f) => `<th>${f.label}</th>`).join("")}</tr>`;
 
-        const ctx = block.querySelector("canvas").getContext("2d");
-        const color = colors[idx % colors.length];
-        const chart = new Chart(ctx, {
-            type: "line",
-            data: {
-                labels: data.labels,
-                datasets: [{
-                    label: field.label,
-                    data: values,
-                    borderColor: color,
-                    borderWidth: 1,
-                    fill: true,
-                    tension: 0.2,
-                    pointRadius: 0,
-                    pointHoverRadius: 3,
-                    backgroundColor: ctx => {
-                        const { chartArea } = ctx.chart;
-                        if (!chartArea) return null;
-                        const gradient = ctx.chart.ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-                        gradient.addColorStop(0, color + "99");
-                        gradient.addColorStop(1, color + "00");
-                        return gradient;
-                    }
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                aspectRatio: 2.5,
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: "top",
-                        align: "start"
-                    }
-                },
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: data.xLabel || "Timestamp"
-                        },
-                        ticks: {
-                            maxRotation: 90,
-                            minRotation: 90, // 🔥 exactly vertical timestamps
-                            autoSkip: true
-                        },
-                        grid: { color: "#2c2c2cff" }
-                    },
-                    y: {
-                        title: { display: true, text: field.label },
-                        grid: { color: "#2c2c2cff" }
-                    }
-                }
-            }
-        });
+  // Table Rows
+  let rows = data.feeds
+    .map((f, i) => {
+      const cols = data.fields.map((field) => {
+        const v = f[field.key];
+        return `<td>${v ? escapeHtml(String(v)) : "-"}</td>`;
+      });
+      const time = data.labels[i] ?? "-";
+      const serial = i + 1;
+      const rowData = JSON.stringify(
+        Object.fromEntries([
+          ["Time", time],
+          ...data.fields.map((field) => [field.label, f[field.key] ?? "-"]),
+        ]),
+        null,
+        2,
+      );
 
-        charts.push(chart);
-    });
-
-    // ✅ Table with Serial No + Hover Copy Button
-    document.getElementById("logSection").style.display = "block";
-
-    // Table Head
-    let thead = `<tr><th>#</th><th>Time</th>${data.fields.map(f => `<th>${f.label}</th>`).join("")}</tr>`;
-
-    // Table Rows
-    let rows = data.feeds
-        .map((f, i) => {
-            const cols = data.fields.map(field => {
-                const v = f[field.key];
-                return `<td>${v ? escapeHtml(String(v)) : "-"}</td>`;
-            });
-            const time = data.labels[i] ?? "-";
-            const serial = i + 1;
-            const rowData = JSON.stringify(
-                Object.fromEntries([
-                    ["Time", time],
-                    ...data.fields.map(field => [field.label, f[field.key] ?? "-"])
-                ]),
-                null,
-                2
-            );
-
-            return `
+      return `
         <tr data-json='${escapeHtml(rowData)}'>
             <td>
                 <button class="copy-btn" title="Copy JSON" onclick="copyRowData(this)"><img src="app/resrc/images/copy.png""></button>${serial}
@@ -497,161 +525,164 @@ function renderChartsAndTable(data) {
             <td>${time}</td>
             ${cols.join("")}
         </tr>`;
-        })
-        .join("");
+    })
+    .join("");
 
-    // Render table
-    document.getElementById("tableContainer").innerHTML = `
+  // Render table
+  document.getElementById("tableContainer").innerHTML = `
 <table class="data-table">
     <thead>${thead}</thead>
     <tbody>${rows}</tbody>
 </table>`;
 
-    enableChartModal();
+  enableChartModal();
 }
 
-const dividers = document.querySelectorAll('.divider');
+const dividers = document.querySelectorAll(".divider");
 let isDragging = false;
 let currentDivider;
 
-dividers.forEach(divider => {
-    divider.addEventListener('mousedown', e => {
-        isDragging = true;
-        currentDivider = divider;
-        document.body.style.cursor = 'col-resize';
-    });
+dividers.forEach((divider) => {
+  divider.addEventListener("mousedown", (e) => {
+    isDragging = true;
+    currentDivider = divider;
+    document.body.style.cursor = "col-resize";
+  });
 });
 
-document.addEventListener('mousemove', e => {
-    if (!isDragging) return;
+document.addEventListener("mousemove", (e) => {
+  if (!isDragging) return;
 
-    const container = document.querySelector('.container');
-    const rect = container.getBoundingClientRect();
-    const x = e.clientX - rect.left;
+  const container = document.querySelector(".container");
+  const rect = container.getBoundingClientRect();
+  const x = e.clientX - rect.left;
 
-    if (currentDivider.id === 'divider1') {
-        const newWidth = Math.min(Math.max(x, 200), 500);
-        document.getElementById('config').style.width = `${newWidth}px`;
-    } else if (currentDivider.id === 'divider2') {
-        const containerWidth = rect.width;
-        const rightX = containerWidth - (e.clientX - rect.left);
-        const newWidth = Math.min(Math.max(rightX, 200), 500);
-        document.getElementById('ai').style.width = `${newWidth}px`;
-    }
+  if (currentDivider.id === "divider1") {
+    const newWidth = Math.min(Math.max(x, 200), 500);
+    document.getElementById("config").style.width = `${newWidth}px`;
+  } else if (currentDivider.id === "divider2") {
+    const containerWidth = rect.width;
+    const rightX = containerWidth - (e.clientX - rect.left);
+    const newWidth = Math.min(Math.max(rightX, 200), 500);
+    document.getElementById("ai").style.width = `${newWidth}px`;
+  }
 });
 
-document.addEventListener('mouseup', () => {
-    isDragging = false;
-    document.body.style.cursor = 'default';
+document.addEventListener("mouseup", () => {
+  isDragging = false;
+  document.body.style.cursor = "default";
 });
-
 
 // Attach modal behavior to every chart canvas
 function enableChartModal() {
-    document.querySelectorAll('.chart-block canvas').forEach(canvas => {
-        canvas.addEventListener('click', () => openChartModal(canvas));
-    });
+  document.querySelectorAll(".chart-block canvas").forEach((canvas) => {
+    canvas.addEventListener("click", () => openChartModal(canvas));
+  });
 }
 
 function openChartModal(originalCanvas) {
-    const modal = document.createElement('div');
-    modal.className = 'chart-modal active';
-    modal.innerHTML = `
+  const modal = document.createElement("div");
+  modal.className = "chart-modal active";
+  modal.innerHTML = `
     <div class="chart-modal-content">
       <span class="chart-modal-close">&times;</span>
       <canvas></canvas>
     </div>
   `;
-    document.body.appendChild(modal);
+  document.body.appendChild(modal);
 
-    const closeModal = () => {
-        modal.classList.remove('active');
-        setTimeout(() => modal.remove(), 200);
-    };
+  const closeModal = () => {
+    modal.classList.remove("active");
+    setTimeout(() => modal.remove(), 200);
+  };
 
-    modal.querySelector('.chart-modal-close').addEventListener('click', closeModal);
-    modal.addEventListener('click', e => {
-        if (e.target === modal) closeModal();
+  modal
+    .querySelector(".chart-modal-close")
+    .addEventListener("click", closeModal);
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  const ctx = modal.querySelector("canvas").getContext("2d");
+  const chart = Chart.getChart(originalCanvas);
+
+  if (chart) {
+    // Safe manual cloning (strip functions)
+    const chartData = JSON.parse(JSON.stringify(chart.data));
+    const chartOptions = JSON.parse(JSON.stringify(chart.options));
+
+    new Chart(ctx, {
+      type: chart.config.type,
+      data: chartData,
+      options: {
+        ...chartOptions,
+        responsive: true,
+        maintainAspectRatio: false,
+      },
     });
-
-    const ctx = modal.querySelector('canvas').getContext('2d');
-    const chart = Chart.getChart(originalCanvas);
-
-    if (chart) {
-        // Safe manual cloning (strip functions)
-        const chartData = JSON.parse(JSON.stringify(chart.data));
-        const chartOptions = JSON.parse(JSON.stringify(chart.options));
-
-        new Chart(ctx, {
-            type: chart.config.type,
-            data: chartData,
-            options: {
-                ...chartOptions,
-                responsive: true,
-                maintainAspectRatio: false,
-            },
-        });
-    }
+  }
 }
-
 async function ask() {
-    const queryInput = document.getElementById("query");
-    const query = queryInput.value.trim();
-    const responseContainer = document.getElementById("response-container");
-    if (!query) return showMessage("Please enter a query for Infinity AI.");
+  const queryInput = document.getElementById("query");
+  const query = queryInput.value.trim();
+  const responseContainer = document.getElementById("response-container");
+  if (!query) return showMessage("Please enter a query for Infinity AI.");
 
-    // Reset input
-    queryInput.value = "";
-    responseContainer.innerHTML += `<div class="user-query">${query}</div>`;
-    responseContainer.innerHTML += `<div class="ai-response typing">Thinking...</div>`;
-    responseContainer.scrollTop = responseContainer.scrollHeight;
+  queryInput.value = "";
+  responseContainer.innerHTML += `<div class="user-query">${query}</div>`;
+  responseContainer.innerHTML += `<div class="ai-response typing"><l-line-spinner size="12" stroke="1" speed="1" color="white"></l-line-spinner> Thinking...</div>`;
+  responseContainer.scrollTop = responseContainer.scrollHeight;
 
-    try {
-        const apiKey = "";
-        const payload = {
-            contents: [{
-                role: "user",
-                parts: [{
-                    text: `
-You are Infinity AI, an intelligent assistant built into OpenDots. 
-Always respond in a single <div> that may contain text, tables, charts, lists, and optional <style> and <script> tags.
+  try {
+    const payload = {
+      contents: [
+        {
+          parts: [
+            {
+              text: `
+You are Infinity AI, an intelligent assistant built into OpenDots.
+Always respond in a single <div>.
 User query: ${query}
 Data: ${JSON.stringify(data || {})}
-                    `
-                }]
-            }]
-        };
+                    `,
+            },
+          ],
+        },
+      ],
+    };
 
-        const res = await fetch(
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-latest:generateContent?key=" + apiKey,
-            {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            }
-        );
+    const res = await fetch("/api/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query, data }),
+    });
 
+    const json = await res.json();
 
-        const json = await res.json();
-        const reply = json.candidates?.[0]?.content?.parts?.[0]?.text || `I couldn't process your request.`;
-
-        const typingDiv = document.querySelector(".ai-response.typing");
-        if (typingDiv) typingDiv.remove();
-
-        const aiDiv = document.createElement("div");
-        aiDiv.className = "ai-response";
-        aiDiv.innerHTML = reply;
-        responseContainer.appendChild(aiDiv);
-        responseContainer.scrollTop = responseContainer.scrollHeight;
-    } catch (err) {
-        const typingDiv = document.querySelector(".ai-response.typing");
-        if (typingDiv) typingDiv.remove();
-        responseContainer.innerHTML += `<div class="ai-response error">Error: ${err.message}</div>`;
-        responseContainer.scrollTop = responseContainer.scrollHeight;
+    if (!res.ok) {
+      throw new Error(json.error?.message || "API request failed");
     }
+
+    const reply = json.reply;
+    if (!reply) throw new Error("No response generated");
+
+    const typingDiv = document.querySelector(".ai-response.typing");
+    if (typingDiv) typingDiv.remove();
+
+    const aiDiv = document.createElement("div");
+    aiDiv.className = "ai-response";
+    aiDiv.innerHTML = reply;
+    responseContainer.appendChild(aiDiv);
+    responseContainer.scrollTop = responseContainer.scrollHeight;
+  } catch (err) {
+    const typingDiv = document.querySelector(".ai-response.typing");
+    if (typingDiv) typingDiv.remove();
+    responseContainer.innerHTML += `<div class="ai-response error">Error: ${err.message}</div>`;
+    responseContainer.scrollTop = responseContainer.scrollHeight;
+  }
 }
 
 function clearChat() {
-    const responseContainer = document.getElementById("response-container");
-    responseContainer.innerHTML = "";
+  const responseContainer = document.getElementById("response-container");
+  responseContainer.innerHTML = "";
 }

@@ -106,9 +106,10 @@ header button img {
     gap: 5px;
 }
 
-#infinity{
+#infinity {
     display: none;
 }
+
 #burger span {
     width: 15px;
     height: 0.1px;
@@ -205,10 +206,11 @@ header button img {
 #response-container .ai-response,
 #response-container .user-query {
     margin-bottom: 10px;
-    padding: 5px 10px;
+    padding: 10px;
     border-radius: 5px;
     width: fit-content;
     max-width: 80%;
+    min-height: max-content;
 }
 
 #response-container .user-query {
@@ -220,6 +222,7 @@ header button img {
 #response-container .ai-response {
     align-self: flex-start;
     background-color: #0f0f0f;
+    overflow-x: scroll;
 }
 
 
@@ -612,22 +615,24 @@ footer {
         bottom: 0;
         background-color: #000000;
     }
-#infinity{
-    display: block;
-}
+
+    #infinity {
+        display: block;
+    }
 
     #ai {
         display: none;
         position: fixed;
-        top:65px;
-        height: calc(100vh - 130px);
+        top: 65px;
+        height: calc(100vh - 200px);
         background-color: #000000;
         border: 1px solid var(--border-color);
         width: calc(100vw - 50px);
         z-index: 10;
         left: 9px;
     }
+
     #response-container {
-        height: calc(100vh - 274px);
+        height: calc(100vh - 344px);
     }
 }
