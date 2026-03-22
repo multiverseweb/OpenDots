@@ -17,13 +17,14 @@
                 <div class="headerIcon" id="burger">
                     <span></span>
                     <span></span>
-                    <span></span>
                 </div>
             </button>
             <button><img src="app/resrc/images/user.png" alt="user" class="headerIcon" id="user"></button>
-            <button onclick="toggleAi()" id="infinity"><img src="app/resrc/images/infinity.png" alt="infinity" class="headerIcon"></button>
+            <button onclick="toggleAi()" id="infinity"><img src="app/resrc/images/infinity.png" alt="infinity"
+                    class="headerIcon"></button>
         </div>
-        <a href="https://opendots.gitbook.io/docs/"><img src="app/resrc/images/OpenDots.png" alt="OpenDots" class="icon">OpenDots</a>
+        <a href="https://opendots.gitbook.io/docs/"><img src="app/resrc/images/OpenDots.png" alt="OpenDots"
+                class="icon">OpenDots</a>
     </header>
     <main class="container">
         <div id="config">
@@ -39,6 +40,10 @@
             <div id="dynamicInputs" class="row"></div>
             <button id="loadBtn" onclick="loadData()">Fetch</button>
             <div id="msg-container">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding: 5px 5px;">
+                    <span>Logs</span><button onclick="hideMessage()">Clear</button>
+                </div>
             </div>
         </div>
         <div class="divider" id="divider1">
@@ -72,17 +77,20 @@
             <div class="divider-handle"></div>
         </div>
         <div id="ai">
-            <div id="ai-header">
-                <h4><img src="app/resrc/images/infinity.png" class="icon" alt="">Infinity AI</h4>
-                <button id="clearBtn" onclick="clearChat()">Clear</button>
-            </div>
             <div id="response-container">
-                <div class="ai-response">Hi! I'm Infinity, your intelligent data assistant.
-                    Ask me anything about your sensor data — I'll visualize, summarize, and explain it for you.</div>
-            </div>
-            <div class="ai-inputs">
-                <input type="text" id="query" placeholder="Type query here...">
-                <button id="sendBtn" onclick="ask()">></button>
+                <div id="ai-header">
+                    <p><img src="app/resrc/images/infinity.png" class="icon" alt="">Infinity AI</p>
+                    <button id="clearBtn" onclick="clearChat()">Clear</button>
+                </div>
+                <div id="ai-chat">
+                    <div class="ai-response">Hi! I'm Infinity, your intelligent data assistant.
+                        Ask me anything about your sensor data — I'll visualize, summarize, and explain it for you.
+                    </div>
+                </div>
+                <div id="ai-inputs">
+                    <input type="text" id="query" placeholder="Type query here...">
+                    <button id="sendBtn" onclick="ask()">></button>
+                </div>
             </div>
         </div>
     </main>

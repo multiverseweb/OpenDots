@@ -30,7 +30,7 @@ function showMessage(msg) {
   // Create a new message element each time
   const el = document.createElement("div");
   el.className = "msg";
-  el.textContent = msg;
+  el.textContent = "> " + msg;
 
   msgContainer.appendChild(el);
 
@@ -40,16 +40,6 @@ function showMessage(msg) {
     el.style.opacity = "1";
     el.style.transform = "translateY(0)";
   });
-
-  // Auto-hide after 4 seconds
-  setTimeout(() => {
-    el.style.opacity = "0";
-    el.style.transform = "translateY(-10px)";
-    setTimeout(() => {
-      el.remove();
-      if (!msgContainer.hasChildNodes()) msgContainer.remove();
-    }, 400);
-  }, 3000);
 }
 
 function hideMessage() {
@@ -61,8 +51,8 @@ function hideMessage() {
 
   // Wait for CSS transition to end, then hide
   setTimeout(() => {
-    el.style.visibility = "hidden";
-    el.textContent = "";
+    el.remove();
+    if (!msgContainer.hasChildNodes()) msgContainer.remove();
   }, 500);
 }
 

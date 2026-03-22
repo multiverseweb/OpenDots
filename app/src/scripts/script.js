@@ -300,6 +300,7 @@ async function fetchGrafana(url, token, query) {
 
 // ---------- RENDER ----------
 function renderData(data) {
+  showMessage("Data fetched.");
   createDynamicSlicers(data.feeds.length);
   const getSlicerValue = () =>
     document.querySelector('input[name="slicer"]:checked')?.value || "all";
@@ -625,13 +626,13 @@ function openChartModal(originalCanvas) {
 async function ask() {
   const queryInput = document.getElementById("query");
   const query = queryInput.value.trim();
-  const responseContainer = document.getElementById("response-container");
+  const aiChat = document.getElementById("ai-chat");
   if (!query) return showMessage("Please enter a query for Infinity AI.");
 
   queryInput.value = "";
-  responseContainer.innerHTML += `<div class="user-query">${query}</div>`;
-  responseContainer.innerHTML += `<div class="ai-response typing"><l-line-spinner size="12" stroke="1" speed="1" color="white"></l-line-spinner> Thinking...</div>`;
-  responseContainer.scrollTop = responseContainer.scrollHeight;
+  aiChat.innerHTML += `<div class="user-query">${query}</div>`;
+  aiChat.innerHTML += `<div class="ai-response typing"><l-line-spinner size="12" stroke="1" speed="1" color="white"></l-line-spinner> Thinking...</div>`;
+  aiChat.scrollTop = aiChat.scrollHeight;
 
   try {
     const payload = {
@@ -658,13 +659,12 @@ Data: ${JSON.stringify(data || {})}
     });
 
     const json = await res.json();
-
     if (!res.ok) {
-      throw new Error(json.error?.message || "API request failed");
+      throw new Error(json.error?.message || "API request failed.");
     }
 
     const reply = json.reply;
-    if (!reply) throw new Error("No response generated");
+    if (!reply) throw new Error("No response generated.");
 
     const typingDiv = document.querySelector(".ai-response.typing");
     if (typingDiv) typingDiv.remove();
@@ -672,17 +672,18 @@ Data: ${JSON.stringify(data || {})}
     const aiDiv = document.createElement("div");
     aiDiv.className = "ai-response";
     aiDiv.innerHTML = reply;
-    responseContainer.appendChild(aiDiv);
-    responseContainer.scrollTop = responseContainer.scrollHeight;
+    aiChat.appendChild(aiDiv);
+    aiChat.scrollTop = aiChat.scrollHeight;
   } catch (err) {
     const typingDiv = document.querySelector(".ai-response.typing");
     if (typingDiv) typingDiv.remove();
-    responseContainer.innerHTML += `<div class="ai-response error">Error: ${err.message}</div>`;
-    responseContainer.scrollTop = responseContainer.scrollHeight;
+    aiChat.innerHTML += `<div class="ai-response error">Error: ${err.message}</div>`;
+    aiChat.scrollTop = aiChat.scrollHeight;
   }
 }
 
 function clearChat() {
-  const responseContainer = document.getElementById("response-container");
-  responseContainer.innerHTML = "";
+  const aiChat = document.getElementById("ai-chat");
+  aiChat.innerHTML = "";
+  showMessage("Chat cleared.");
 }
