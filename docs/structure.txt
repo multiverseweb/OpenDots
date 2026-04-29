@@ -4,8 +4,18 @@
 ├── README.md
 ├── api/
 │   └── ask.js
-├── app/
-│   ├── resrc/
+├── docs/
+│   └── structure.txt
+├── package-lock.json
+├── package.json
+├── postcss.config.js
+├── public/
+│   ├── index.html
+│   ├── manifest.json
+│   ├── service-worker.js
+│   └── sitemap.xml
+├── src/
+│   ├── assets/
 │   │   └── images/
 │   │       ├── OpenDots.png
 │   │       ├── copy.png
@@ -13,15 +23,12 @@
 │   │       ├── loading.gif
 │   │       ├── tick.png
 │   │       └── user.png
-│   └── src/
-│       ├── scripts/
-│       │   ├── load.js
-│       │   └── script.js
-│       └── styles/
-│           └── style.css
-├── docs/
-│   └── structure.txt
-├── index.html
-├── manifest.json
-├── service-worker.js
-└── sitemap.xml
+│   ├── css/
+│   │   ├── input.css
+│   │   └── style.css
+│   └── js/
+│       ├── load.js
+│       └── script.js
+├── structure.txt
+├── tailwind.config.js
+└── vercel.json
