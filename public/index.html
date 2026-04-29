@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>OpenDots</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
-    <link rel="stylesheet" href="app/src/styles/style.css" />
-    <link rel="shortcut icon" href="app/resrc/images/OpenDots.png" type="image/x-icon">
+    <link href="/src/css/output.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/src/assets/images/OpenDots.png" type="image/x-icon">
 </head>
 
 <body>
@@ -19,11 +19,11 @@
                     <span></span>
                 </div>
             </button>
-            <button><img src="app/resrc/images/user.png" alt="user" class="headerIcon" id="user"></button>
-            <button onclick="toggleAi()" id="infinity"><img src="app/resrc/images/infinity.png" alt="infinity"
+            <button><img src="/src/assets/images/user.png" alt="user" class="headerIcon" id="user"></button>
+            <button onclick="toggleAi()" id="infinity"><img src="/src/assets/images/infinity.png" alt="infinity"
                     class="headerIcon"></button>
         </div>
-        <a href="https://opendots.gitbook.io/docs/"><img src="app/resrc/images/OpenDots.png" alt="OpenDots"
+        <a href="https://opendots.gitbook.io/docs/"><img src="/src/assets/images/OpenDots.png" alt="OpenDots"
                 class="icon">OpenDots</a>
     </header>
     <main class="container">
@@ -79,7 +79,7 @@
         <div id="ai">
             <div id="response-container">
                 <div id="ai-header">
-                    <p><img src="app/resrc/images/infinity.png" class="icon" alt="">Infinity AI</p>
+                    <p><img src="/src/assets/images/infinity.png" class="icon" alt="">Infinity AI</p>
                     <button id="clearBtn" onclick="clearChat()">Clear</button>
                 </div>
                 <div id="ai-chat">
@@ -100,8 +100,8 @@
     </footer>
 
     <script type="module" src="https://cdn.jsdelivr.net/npm/ldrs/dist/auto/lineSpinner.js"></script>
-    <script src="app/src/scripts/script.js"></script>
-    <script src="app/src/scripts/load.js"></script>
+    <script src="/src/js/script.js"></script>
+    <script src="/src/js/load.js"></script>
 </body>
 
 </html>

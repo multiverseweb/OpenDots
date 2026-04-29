@@ -635,28 +635,23 @@ async function ask() {
   aiChat.scrollTop = aiChat.scrollHeight;
 
   try {
-    const payload = {
-      contents: [
-        {
-          parts: [
-            {
-              text: `
-You are Infinity AI, an intelligent assistant built into OpenDots.
-Always respond in a single <div>.
-User query: ${query}
-Data: ${JSON.stringify(data || {})}
-                    `,
-            },
-          ],
-        },
-      ],
-    };
-
     const res = await fetch("/api/ask", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query, data }),
+      body: JSON.stringify({ 
+        query, 
+        data: data ? { ...data, feeds: data.feeds.slice(-50) } : null 
+      }),
     });
+
+    if (res.status === 405) {
+      throw new Error("API Method Not Allowed (405). If running locally, please use 'npm run dev' (vercel dev) instead of a static server.");
+    }
+
+    const contentType = res.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      throw new Error(`Server returned non-JSON response (${res.status}).`);
+    }
 
     const json = await res.json();
     if (!res.ok) {
