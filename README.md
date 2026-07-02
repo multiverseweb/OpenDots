@@ -1,4 +1,4 @@
-# OpenDots <img src="app/resrc/images/OpenDots.png" height=50px align=right> id="project-logo"
+# OpenDots <img src="app/resrc/images/OpenDots.png" height=50px align=right id="project-logo">
 
 ###### AI • IoT • Data Analytics Platform
 
