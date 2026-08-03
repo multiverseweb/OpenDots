@@ -42,6 +42,50 @@ Users can create highly customizable dashboards, publish sharable project sites,
 - Support for live camera feeds and video streams  
 - Chat-based AI insights for trends, summaries, and anomaly detection  
 
+## System Architecture
+
+```mermaid
+graph TD
+    subgraph Sensors & Data Sources
+        Arduino[Arduino / Microcontrollers]
+        ThingSpeak[ThingSpeak API]
+        Adafruit[Adafruit IO]
+        Blynk[Blynk IoT]
+        Grafana[Grafana Data Sources]
+        Cam[Live Camera Streams]
+    end
+
+    subgraph OpenDots Core Engine
+        Ingestion[Data Ingestion Service]
+        WebSocket[WebSocket Gateway]
+        Express[Node.js / Express Backend]
+        DB[(MongoDB Database)]
+        AI[AI & LLM Analytics Service]
+    end
+
+    subgraph User Interface
+        Dashboard[React.js Real-time Dashboard]
+        PublicSite[Sharable Project Sites]
+        AIChat[AI Insights & Anomaly Chat]
+    end
+
+    Arduino --> Ingestion
+    ThingSpeak --> Ingestion
+    Adafruit --> Ingestion
+    Blynk --> Ingestion
+    Grafana --> Ingestion
+    Cam --> Ingestion
+
+    Ingestion --> WebSocket
+    WebSocket --> Express
+    Express <--> DB
+    Express <--> AI
+
+    WebSocket --> Dashboard
+    Express --> PublicSite
+    AI --> AIChat
+```
+
 ## Tech Stack
 
 | Layer | Technologies |
@@ -56,6 +100,43 @@ Users can create highly customizable dashboards, publish sharable project sites,
 | DevOps & CI/CD | GitHub, GitHub Actions |
 | Deployment | Vercel, Netlify, Cloud hosting |
 
+## Installation & Getting Started
+
+### Prerequisites
+- [Node.js](https://nodejs.org/) (v16.0 or higher)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+- [MongoDB](https://www.mongodb.com/) instance (local or MongoDB Atlas)
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/multiverseweb/OpenDots.git
+cd OpenDots
+```
+
+### 2. Install Dependencies
+```bash
+npm install
+```
+
+### 3. Environment Configuration
+Create a `.env` file in the root directory:
+```env
+PORT=5000
+MONGODB_URI=mongodb://localhost:27017/opendots
+JWT_SECRET=your_jwt_secret_key
+FIREBASE_API_KEY=your_firebase_api_key
+```
+
+### 4. Launch Application
+```bash
+# Start backend server & frontend dev environment
+npm run dev
+```
+Open `http://localhost:3000` in your browser.
+
+### 5. Connecting IoT Telemetry
+- Configure sensor nodes to push WebSocket payloads to `ws://localhost:5000/api/v1/stream`.
+- Enter your ThingSpeak / Adafruit IO credentials in the dashboard integrations panel to auto-sync channels.
 
 ## Use Cases
 
