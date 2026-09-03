@@ -1,7 +1,7 @@
 {
   "name": "opendots",
   "version": "1.0.0",
-  "description": "![Visitors](https://api.visitorbadge.io/api/visitors?path=multiverseweb2%2OpenDots%20&countColor=%23263759&style=flat&initial=5767)\r   ![License](https://img.shields.io/badge/License-MIT-4e3eb5)\r   ![Languages](https://img.shields.io/github/languages/count/multiverseweb/OpenDots?color=20B2AA)\r   ![GitHub Repo stars](https://img.shields.io/github/stars/multiverseweb/OpenDots)\r   ![GitHub contributors](https://img.shields.io/github/contributors/multiverseweb/OpenDots)\r   ![GitHub issues](https://img.shields.io/github/issues/multiverseweb/OpenDots)\r   ![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/multiverseweb/OpenDots)\r   ![GitHub forks](https://img.shields.io/github/forks/multiverseweb/OpenDots)\r   ![GitHub pull requests](https://img.shields.io/github/issues-pr/multiverseweb/OpenDots)\r   ![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/multiverseweb/OpenDots)\r   ![GitHub last commit](https://img.shields.io/github/last-commit/multiverseweb/OpenDots)\r   ![GitHub repo size](https://img.shields.io/github/repo-size/multiverseweb/OpenDots)\r   ![GitHub total lines](https://sloc.xyz/github/multiverseweb/OpenDots)\r   <a href=\"https://multiverseweb.github.io/OpenDots/\"><img alt=\"Website\" src=\"https://img.shields.io/website?url=https%3A%2F%2Fmultiverseweb.github.io/OpenDots%2F&up_message=awake&up_color=%2300d18f&down_message=asleep&down_color=red&style=flat\">\r </a>",
+  "description": "![Visitors](https://api.visitorbadge.io/api/visitors?path=tjiuce2%2OpenDots%20&countColor=%23263759&style=flat&initial=5767)\r   ![License](https://img.shields.io/badge/License-MIT-4e3eb5)\r   ![Languages](https://img.shields.io/github/languages/count/tjiuce/OpenDots?color=20B2AA)\r   ![GitHub Repo stars](https://img.shields.io/github/stars/tjiuce/OpenDots)\r   ![GitHub contributors](https://img.shields.io/github/contributors/tjiuce/OpenDots)\r   ![GitHub issues](https://img.shields.io/github/issues/tjiuce/OpenDots)\r   ![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/tjiuce/OpenDots)\r   ![GitHub forks](https://img.shields.io/github/forks/tjiuce/OpenDots)\r   ![GitHub pull requests](https://img.shields.io/github/issues-pr/tjiuce/OpenDots)\r   ![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/tjiuce/OpenDots)\r   ![GitHub last commit](https://img.shields.io/github/last-commit/tjiuce/OpenDots)\r   ![GitHub repo size](https://img.shields.io/github/repo-size/tjiuce/OpenDots)\r   ![GitHub total lines](https://sloc.xyz/github/tjiuce/OpenDots)\r   <a href=\"https://tjiuce.github.io/OpenDots/\"><img alt=\"Website\" src=\"https://img.shields.io/website?url=https%3A%2F%2Ftjiuce.github.io/OpenDots%2F&up_message=awake&up_color=%2300d18f&down_message=asleep&down_color=red&style=flat\">\r </a>",
   "main": "service-worker.js",
   "directories": {
     "doc": "docs"
@@ -15,16 +15,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/multiverseweb/OpenDots.git"
+    "url": "git+https://github.com/tjiuce/OpenDots.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/multiverseweb/OpenDots/issues"
+    "url": "https://github.com/tjiuce/OpenDots/issues"
   },
-  "homepage": "https://github.com/multiverseweb/OpenDots#readme",
+  "homepage": "https://github.com/tjiuce/OpenDots#readme",
   "devDependencies": {
     "autoprefixer": "^10.4.27",
     "postcss": "^8.5.8",

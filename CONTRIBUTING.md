@@ -21,7 +21,7 @@ cd OpenDots
 ```
 4. Add the upstream repository:
 ```bash
-git remote add upstream https://github.com/multiverseweb/OpenDots.git
+git remote add upstream https://github.com/tjiuce/OpenDots.git
 ```
 
 ## Branch Naming Convention
@@ -81,4 +81,4 @@ git push origin DSCWoC-YourName
 
 ## Support
 
-For questions or discussions, use GitHub [Issues](https://github.com/multiverseweb/OpenDots/issues) or [Discussions](https://github.com/multiverseweb/OpenDots/discussions/).
+For questions or discussions, use GitHub [Issues](https://github.com/tjiuce/OpenDots/issues) or [Discussions](https://github.com/tjiuce/OpenDots/discussions/).

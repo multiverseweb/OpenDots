@@ -2,20 +2,20 @@
 
 ###### AI • IoT • Data Analytics Platform
 
-![Visitors](https://api.visitorbadge.io/api/visitors?path=multiverseweb2%2OpenDots%20&countColor=%23263759&style=flat&initial=5767)
+![Visitors](https://api.visitorbadge.io/api/visitors?path=tjiuce2%2OpenDots%20&countColor=%23263759&style=flat&initial=5767)
   ![License](https://img.shields.io/badge/License-MIT-4e3eb5)
-  ![Languages](https://img.shields.io/github/languages/count/multiverseweb/OpenDots?color=20B2AA)
-  ![GitHub Repo stars](https://img.shields.io/github/stars/multiverseweb/OpenDots)
-  ![GitHub contributors](https://img.shields.io/github/contributors/multiverseweb/OpenDots)
-  ![GitHub issues](https://img.shields.io/github/issues/multiverseweb/OpenDots)
-  ![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/multiverseweb/OpenDots)
-  ![GitHub forks](https://img.shields.io/github/forks/multiverseweb/OpenDots)
-  ![GitHub pull requests](https://img.shields.io/github/issues-pr/multiverseweb/OpenDots)
-  ![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/multiverseweb/OpenDots)
-  ![GitHub last commit](https://img.shields.io/github/last-commit/multiverseweb/OpenDots)
-  ![GitHub repo size](https://img.shields.io/github/repo-size/multiverseweb/OpenDots)
-  ![GitHub total lines](https://sloc.xyz/github/multiverseweb/OpenDots)
-  <a href="https://multiverseweb.github.io/OpenDots/"><img alt="Website" src="https://img.shields.io/website?url=https%3A%2F%2Fmultiverseweb.github.io/OpenDots%2F&up_message=awake&up_color=%2300d18f&down_message=asleep&down_color=red&style=flat">
+  ![Languages](https://img.shields.io/github/languages/count/tjiuce/OpenDots?color=20B2AA)
+  ![GitHub Repo stars](https://img.shields.io/github/stars/tjiuce/OpenDots)
+  ![GitHub contributors](https://img.shields.io/github/contributors/tjiuce/OpenDots)
+  ![GitHub issues](https://img.shields.io/github/issues/tjiuce/OpenDots)
+  ![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/tjiuce/OpenDots)
+  ![GitHub forks](https://img.shields.io/github/forks/tjiuce/OpenDots)
+  ![GitHub pull requests](https://img.shields.io/github/issues-pr/tjiuce/OpenDots)
+  ![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/tjiuce/OpenDots)
+  ![GitHub last commit](https://img.shields.io/github/last-commit/tjiuce/OpenDots)
+  ![GitHub repo size](https://img.shields.io/github/repo-size/tjiuce/OpenDots)
+  ![GitHub total lines](https://sloc.xyz/github/tjiuce/OpenDots)
+  <a href="https://tjiuce.github.io/OpenDots/"><img alt="Website" src="https://img.shields.io/website?url=https%3A%2F%2Ftjiuce.github.io/OpenDots%2F&up_message=awake&up_color=%2300d18f&down_message=asleep&down_color=red&style=flat">
 </a>
 
 ---
@@ -109,7 +109,7 @@ graph TD
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/multiverseweb/OpenDots.git
+git clone https://github.com/tjiuce/OpenDots.git
 cd OpenDots
 ```
 
@@ -154,19 +154,19 @@ Open `http://localhost:3000` in your browser.
   <source
     media="(prefers-color-scheme: dark)"
     srcset="
-      https://api.star-history.com/svg?repos=multiverseweb/OpenDots&type=Date&theme=dark
+      https://api.star-history.com/svg?repos=tjiuce/OpenDots&type=Date&theme=dark
     "
   />
   
   <source
     media="(prefers-color-scheme: light)"
     srcset="
-      https://api.star-history.com/svg?repos=multiverseweb/OpenDots&type=Date
+      https://api.star-history.com/svg?repos=tjiuce/OpenDots&type=Date
     "
   />
   <img
     alt="Star History Chart"
-    src="https://api.star-history.com/svg?repos=multiverseweb/OpenDots&type=Date&theme=dark"
+    src="https://api.star-history.com/svg?repos=tjiuce/OpenDots&type=Date&theme=dark"
   />
 </picture>
 
@@ -174,19 +174,19 @@ Open `http://localhost:3000` in your browser.
 
 ### Our Valuable Contributors ❤️
 
-[![Contributors](https://contrib.rocks/image?repo=multiverseweb/OpenDots)](https://github.com/multiverseweb/OpenDots/graphs/contributors)
+[![Contributors](https://contrib.rocks/image?repo=tjiuce/OpenDots)](https://github.com/tjiuce/OpenDots/graphs/contributors)
 
 ### Stargazers ⭐
 
 <div align='left'>
 
-[![Stargazers repo roster for @multiverseweb/OpenDots](https://reporoster.com/stars/dark/multiverseweb/OpenDots)](https://github.com/multiverseweb/OpenDots/stargazers)
+[![Stargazers repo roster for @tjiuce/OpenDots](https://reporoster.com/stars/dark/tjiuce/OpenDots)](https://github.com/tjiuce/OpenDots/stargazers)
 
 </div>
 
 ### Forkers 🍴
 
-[![Forkers repo roster for @multiverseweb/OpenDots](https://reporoster.com/forks/dark/multiverseweb/OpenDots)](https://github.com/multiverseweb/OpenDots/network/members)
+[![Forkers repo roster for @tjiuce/OpenDots](https://reporoster.com/forks/dark/tjiuce/OpenDots)](https://github.com/tjiuce/OpenDots/network/members)
 
 
 ## Maintainer

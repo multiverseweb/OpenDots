@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-BASE_URL = "https://multiverseweb.github.io/OpenDots"
+BASE_URL = "https://tjiuce.github.io/OpenDots"
 
 EXCLUDE_DIRS = {".git", ".github", "__pycache__", "node_modules", "venv"}
 
